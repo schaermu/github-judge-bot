@@ -1,0 +1,14 @@
+slack:
+  app_token: <INSERT_APP_TOKEN>
+  bot_token: <INSERT_BOT_TOKEN>
+  signing_token: <INSERT_SIGNING_TOKEN>
+  debug: false
+debug: false
+github:
+  username: <INSERT_GH_USERNAME>
+  access_token: <INSERT_GH_PERSONAL_ACCESS_TOKEN>
+scoring:
+  stars:
+    min_stars: 800
+    max_penalty: 2.0
+    
