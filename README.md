@@ -41,5 +41,5 @@ Make sure your config file is in the same folder as the executable, then simply 
 ## Docker
 Starting the bot using docker is simple as well:
 ```
-docker run -v "$(pwd)"/config.yaml:/config.yaml:ro schaermu/github-judge-bot:latest
+docker run -v "$(pwd)"/config.yaml:/config.yaml:ro ghcr.io/schaermu/github-judge-bot:latest
 ```
