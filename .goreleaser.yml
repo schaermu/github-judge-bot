@@ -16,6 +16,20 @@ archives:
       windows: Windows
       386: i386
       amd64: x86_64
+dockers:
+  - image_templates:
+    - "schaermu/github-judge-bot:latest"
+    - "schaermu/github-judge-bot:{{ .Tag }}"
+    - "schaermu/github-judge-bot:v{{ .Major }}"
+    - "schaermu/github-judge-bot:v{{ .Major }}.{{ .Minor }}"
+    skip_push: true
+    build_flag_templates:
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title={{.ProjectName}}"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--platform=linux/arm64"
 checksum:
   name_template: 'checksums.txt'
 snapshot:

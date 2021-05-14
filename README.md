@@ -3,11 +3,11 @@ This bot is a port of an [old node.js](https://github.com/schaermu/repolyzer-sla
 
 Use the bot at your own risk.
 
-## Setting it up
-### **Project**
+# Setting it up
+## Project
 Copy `config.yaml.example` to `config.yaml`.
 
-### **Slack**
+## Slack
 1) Create a new [Slack app](https://api.slack.com/apps).
 2) Copy the Signing Secret from the `App Credentials` section to the config (`slack.signing_secret`).
 3) Create a new App-Level token with `connections:write` permissions.
@@ -28,15 +28,18 @@ Copy `config.yaml.example` to `config.yaml`.
 10) Go back to *OAuth & Permissions* and install the bot in your workspace.
 11) Copy the Bot token to the config (`slack.bot_token`)
 
-### **GitHub**
+## GitHub
 1) Create a new [Personal Access Token](https://github.com/settings/tokens) with the `repo:public_repo` permission.
 2) Copy the token to the config (`github.access_token`) and set up your username in GitHub.
 
-## Running
+# Running
 You can either run the pre-compiled binary or you can use docker (recommended).
 
-### **Binary**
-Make sure your config file is in the same folder as the executable, then simply execute it.
+## Binary
+Make sure your config file is in the same folder as the executable, then simply start the `github-judge-bot` binary.
 
-### **Docker**
-TBD
+## Docker
+Starting the bot using docker is simple as well:
+```
+docker run -v "$(pwd)"/config.yaml:/config.yaml:ro schaermu/github-judge-bot:latest
+```
