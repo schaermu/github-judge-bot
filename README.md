@@ -1,5 +1,5 @@
 # GitHub Judge Bot - Your OpenSource evaluation buddy
-This bot is a port from an [old node.js](https://github.com/schaermu/repolyzer-slackbot) project of mine. The Go code is probably not state-of-the-art, but this project is supposed to help me get to speed.
+This bot is a port of an [old node.js](https://github.com/schaermu/repolyzer-slackbot) project of mine. The Go code is probably not state-of-the-art, but this project is supposed to help me get to speed.
 
 Use the bot at your own risk.
 
