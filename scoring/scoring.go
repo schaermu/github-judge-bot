@@ -12,6 +12,7 @@ type Scorer interface {
 }
 
 func GetTotalScore(data helpers.GithubRepoInfo, scoreConfig config.ScoringConfig) (score float64, penalties []ScoringPenalty) {
+	score = scoreConfig.MaxScore
 	stars := StarsScorer{data: data, config: scoreConfig.Stars}
 	score, penalties = stars.GetScore(score, penalties)
 

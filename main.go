@@ -36,7 +36,6 @@ func main() {
 	)
 
 	messageMatcher, _ := regexp.Compile("github.com/([^/]+)/([^/<>]+)")
-
 	go func() {
 		for evt := range client.Events {
 			switch evt.Type {
@@ -74,10 +73,8 @@ func main() {
 							}
 
 							score, penalties := scoring.GetTotalScore(info, cfg.Score)
-							fmt.Printf("Final score: %f\n", score)
-							for _, penalty := range penalties {
-								fmt.Printf("%f: %s\n", penalty.Amount, penalty.Reason)
-							}
+							msgBlocks := buildSlackResponse(info.OrgName, info.RepositoryName, score, penalties)
+							api.PostMessage(ev.Channel, msgBlocks...)
 						}
 					}
 				default:
@@ -90,4 +87,46 @@ func main() {
 	}()
 
 	client.Run()
+}
+
+func buildSlackResponse(org string, repository string, score float64, penalties []scoring.ScoringPenalty) []slack.MsgOption {
+	messageColor := "good"
+	messageIcon := ":+1::skin-tone-2:"
+
+	if score < 8 {
+		messageColor = "warning"
+		messageIcon = ":warning:"
+	}
+
+	if score < 4 {
+		messageColor = "danger"
+		messageIcon = ":exclamation:"
+	}
+
+	// build default message
+	res := []slack.MsgOption{
+		slack.MsgOptionIconEmoji(messageIcon),
+		slack.MsgOptionText(fmt.Sprintf("Analysis of `%s/%s` complete, final score is *%.2f/10.00* points!", org, repository, score), false),
+	}
+
+	// append penalty attachment containing details
+	if len(penalties) > 0 {
+		penaltyOutput := ""
+		for _, penalty := range penalties {
+			penaltyOutput += fmt.Sprintf("*%.2f* _%s_\n", penalty.Amount, penalty.Reason)
+		}
+
+		attachment := slack.MsgOptionAttachments(
+			slack.Attachment{
+				Color:      messageColor,
+				MarkdownIn: []string{"text"},
+				Text:       penaltyOutput,
+				Pretext:    "The following reasons lead to penalties",
+			},
+		)
+
+		res = append(res, attachment)
+	}
+
+	return res
 }

@@ -17,7 +17,8 @@ type GithubConfig struct {
 }
 
 type ScoringConfig struct {
-	Stars StarsScoringConfig `mapstructure:"stars"`
+	MaxScore float64            `mapstructure:"max_score"`
+	Stars    StarsScoringConfig `mapstructure:"stars"`
 }
 
 type StarsScoringConfig struct {
