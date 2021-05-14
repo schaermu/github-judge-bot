@@ -17,12 +17,14 @@ archives:
       386: i386
       amd64: x86_64
 dockers:
-  - image_templates:
+  - goos: linux
+    goarch: amd64
+    goarm: ''
+    image_templates:
     - "schaermu/github-judge-bot:latest"
     - "schaermu/github-judge-bot:{{ .Tag }}"
     - "schaermu/github-judge-bot:v{{ .Major }}"
     - "schaermu/github-judge-bot:v{{ .Major }}.{{ .Minor }}"
-    skip_push: true
     build_flag_templates:
     - "--pull"
     - "--label=org.opencontainers.image.created={{.Date}}"
