@@ -28,6 +28,7 @@ dockers:
     - "ghcr.io/schaermu/github-judge-bot:v{{ .Major }}.{{ .Minor }}"
     build_flag_templates:
     - "--pull"
+    - "--label=org.opencontainers.image.source=https://github.com/schaermu/github-judge-bot"
     - "--label=org.opencontainers.image.created={{.Date}}"
     - "--label=org.opencontainers.image.title={{.ProjectName}}"
     - "--label=org.opencontainers.image.revision={{.FullCommit}}"
