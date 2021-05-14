@@ -20,6 +20,7 @@ dockers:
   - goos: linux
     goarch: amd64
     goarm: ''
+    use_buildx: true
     image_templates:
     - "schaermu/github-judge-bot:latest"
     - "schaermu/github-judge-bot:{{ .Tag }}"
@@ -31,7 +32,7 @@ dockers:
     - "--label=org.opencontainers.image.title={{.ProjectName}}"
     - "--label=org.opencontainers.image.revision={{.FullCommit}}"
     - "--label=org.opencontainers.image.version={{.Version}}"
-    - "--platform=linux/arm64"
+    - "--platform=linux/amd64"
 checksum:
   name_template: 'checksums.txt'
 snapshot:
