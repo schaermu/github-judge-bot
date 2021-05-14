@@ -22,10 +22,10 @@ dockers:
     goarm: ''
     use_buildx: true
     image_templates:
-    - "docker.pkg.github.com/schaermu/github-judge-bot/github-judge-bot:latest"
-    - "docker.pkg.github.com/schaermu/github-judge-bot/github-judge-bot:{{ .Tag }}"
-    - "docker.pkg.github.com/schaermu/github-judge-bot/github-judge-bot:v{{ .Major }}"
-    - "docker.pkg.github.com/schaermu/github-judge-bot/github-judge-bot:v{{ .Major }}.{{ .Minor }}"
+    - "ghcr.io/schaermu/github-judge-bot:latest"
+    - "ghcr.io/schaermu/github-judge-bot:{{ .Tag }}"
+    - "ghcr.io/schaermu/github-judge-bot:v{{ .Major }}"
+    - "ghcr.io/schaermu/github-judge-bot:v{{ .Major }}.{{ .Minor }}"
     build_flag_templates:
     - "--pull"
     - "--label=org.opencontainers.image.created={{.Date}}"
