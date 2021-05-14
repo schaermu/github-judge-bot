@@ -18,9 +18,9 @@ archives:
       386: i386
       amd64: x86_64
     
-  files:
-    - LICENSE
-    - config.yaml.example
+    files:
+      - LICENSE
+      - config.yaml.example
 dockers:
   - goos: linux
     goarch: amd64
