@@ -17,13 +17,25 @@ type GithubConfig struct {
 }
 
 type ScoringConfig struct {
-	MaxScore float64            `mapstructure:"max_score"`
-	Stars    StarsScoringConfig `mapstructure:"stars"`
+	MaxScore       float64              `mapstructure:"max_score"`
+	Stars          StarsScoringConfig   `mapstructure:"stars"`
+	Issues         IssuesScoringConfig  `mapstructure:"issues"`
+	CommitActivity CommitActivityConfig `mapstructure:"activity"`
 }
 
 type StarsScoringConfig struct {
 	MinStars   int     `mapstructure:"min_stars"`
 	MaxPenalty float64 `mapstructure:"max_penalty"`
+}
+
+type IssuesScoringConfig struct {
+	OpenClosedRatio float64 `mapstructure:"open_closed_ratio"`
+	MaxPenalty      float64 `mapstructure:"max_penalty"`
+}
+
+type CommitActivityConfig struct {
+	WeeklyInactivityPenalty float64 `mapstructure:"weekly_penalty"`
+	MaxPenalty              float64 `mapstructure:"max_penalty"`
 }
 
 type Config struct {

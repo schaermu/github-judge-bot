@@ -113,7 +113,7 @@ func buildSlackResponse(org string, repository string, score float64, penalties 
 	if len(penalties) > 0 {
 		penaltyOutput := ""
 		for _, penalty := range penalties {
-			penaltyOutput += fmt.Sprintf("*%.2f* _%s_\n", penalty.Amount, penalty.Reason)
+			penaltyOutput += fmt.Sprintf("-*%.2f* _%s_\n", penalty.Amount, penalty.Reason)
 		}
 
 		attachment := slack.MsgOptionAttachments(
