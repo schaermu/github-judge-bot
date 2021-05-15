@@ -2,7 +2,6 @@ package scoring
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/helpers"
@@ -14,13 +13,8 @@ type StarsScorer struct {
 }
 
 func (s StarsScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
-	starRel := float64(s.data.Stars/s.config.MinStars) * s.config.MaxPenalty
-	if starRel > s.config.MaxPenalty {
-		starRel = s.config.MaxPenalty
-	}
-
-	if math.Abs(starRel-s.config.MaxPenalty) > 0 {
-		scoreChange := math.Abs(starRel - s.config.MaxPenalty)
+	if s.data.Stars < s.config.MinStars {
+		scoreChange := s.config.MaxPenalty
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
