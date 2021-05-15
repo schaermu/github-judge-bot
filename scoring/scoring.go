@@ -28,5 +28,11 @@ func GetTotalScore(data helpers.GithubRepoInfo, scoreConfig config.ScoringConfig
 	commitActivity := CommitActivityScorer{data: data, config: scoreConfig.CommitActivity}
 	score, penalties = commitActivity.GetScore(score, penalties)
 
+	contributors := ContributorScorer{data: data, config: scoreConfig.Contributors}
+	score, penalties = contributors.GetScore(score, penalties)
+
+	license := LicenseScorer{data: data, config: scoreConfig.License}
+	score, penalties = license.GetScore(score, penalties)
+
 	return score, penalties
 }

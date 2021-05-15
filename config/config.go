@@ -21,21 +21,38 @@ type ScoringConfig struct {
 	Stars          StarsScoringConfig   `mapstructure:"stars"`
 	Issues         IssuesScoringConfig  `mapstructure:"issues"`
 	CommitActivity CommitActivityConfig `mapstructure:"activity"`
+	Contributors   ContributorsConfig   `mapstructure:"contributors"`
+	License        LicenseConfig        `mapstructure:"license"`
 }
 
 type StarsScoringConfig struct {
-	MinStars   int     `mapstructure:"min_stars"`
 	MaxPenalty float64 `mapstructure:"max_penalty"`
+	Enabled    bool    `mapstructure:"enabled"`
+	MinStars   int     `mapstructure:"min_stars"`
 }
 
 type IssuesScoringConfig struct {
-	OpenClosedRatio float64 `mapstructure:"open_closed_ratio"`
 	MaxPenalty      float64 `mapstructure:"max_penalty"`
+	Enabled         bool    `mapstructure:"enabled"`
+	OpenClosedRatio float64 `mapstructure:"open_closed_ratio"`
 }
 
 type CommitActivityConfig struct {
-	WeeklyInactivityPenalty float64 `mapstructure:"weekly_penalty"`
 	MaxPenalty              float64 `mapstructure:"max_penalty"`
+	Enabled                 bool    `mapstructure:"enabled"`
+	WeeklyInactivityPenalty float64 `mapstructure:"weekly_penalty"`
+}
+
+type ContributorsConfig struct {
+	MaxPenalty      float64 `mapstructure:"max_penalty"`
+	Enabled         bool    `mapstructure:"enabled"`
+	MinContributors int     `mapstructure:"min_contributors"`
+}
+
+type LicenseConfig struct {
+	MaxPenalty      float64  `mapstructure:"max_penalty"`
+	Enabled         bool     `mapstructure:"enabled"`
+	ValidLicenseIds []string `mapstructure:"valid_license_ids"`
 }
 
 type Config struct {

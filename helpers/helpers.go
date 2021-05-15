@@ -14,8 +14,11 @@ type GithubRepoInfo struct {
 	OrgName        string
 	RepositoryName string
 	Stars          int
+	License        string
+	LicenseId      string
 	Issues         []*github.Issue
 	CommitActivity []*github.WeeklyCommitActivity
+	Contributors   []*github.ContributorStats
 }
 
 type GithubHelper struct {
@@ -43,19 +46,28 @@ func (gh GithubHelper) GetRepositoryData(repoUrl string) (info GithubRepoInfo, e
 	info = GithubRepoInfo{
 		OrgName:        org,
 		RepositoryName: repo,
-		Stars:          *repoInfo.StargazersCount,
+		Stars:          repoInfo.GetStargazersCount(),
+		License:        repoInfo.GetLicense().GetName(),
+		LicenseId:      repoInfo.GetLicense().GetSPDXID(),
 	}
 
 	var waitgroup sync.WaitGroup
-	waitgroup.Add(2)
+	waitgroup.Add(3)
 
 	// fetch additional data
 	go getRepoIssues(&info, client, &waitgroup)
 	go getCommitActivity(&info, client, &waitgroup)
+	go getContributorStats(&info, client, &waitgroup)
 
 	waitgroup.Wait()
 
 	return
+}
+
+func getContributorStats(info *GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
+	contributors, _, _ := client.Repositories.ListContributorsStats(context.Background(), info.OrgName, info.RepositoryName)
+	info.Contributors = contributors
+	waitgroup.Done()
 }
 
 func getCommitActivity(info *GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
