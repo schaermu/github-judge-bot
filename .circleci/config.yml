@@ -54,6 +54,9 @@ jobs:
     docker:
       - image: circleci/golang:1.16
     steps:
-      - checkout
+      - checkout      
+      - setup_remote_docker:
+          version: 20.10.2
+          docker_layer_caching: true
       - run: echo ${GITHUB_TOKEN} | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
       - run: curl -sL https://git.io/goreleaser | bash
