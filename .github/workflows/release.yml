@@ -13,16 +13,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Go
+      - name: Run tests
         uses: actions/setup-go@v2
         with:
           go-version: '1.16'
-      
-      - name: Run Tests
-        run: go test -race -coverprofile=coverage.out -covermode=atomic ./..
-
-      - name: Upload code coverage to Codecov
-        run: bash <(curl -s https://codecov.io/bash)
+        run: |
+          go test -race -coverprofile=coverage.out -covermode=atomic ./..
+          bash <(curl -s https://codecov.io/bash)
 
   release:
     runs-on: ubuntu-latest
