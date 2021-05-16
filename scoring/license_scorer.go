@@ -29,7 +29,7 @@ func (s LicenseScorer) GetScore(currentScore float64, penalties []ScoringPenalty
 	scoreChange = s.config.MaxPenalty
 	for _, id := range s.config.ValidLicenseIds {
 		if id == s.data.LicenseId {
-			scoreChange = s.config.MaxPenalty
+			scoreChange = 0
 			break
 		}
 	}

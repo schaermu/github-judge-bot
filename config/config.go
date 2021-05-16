@@ -34,7 +34,7 @@ type StarsScoringConfig struct {
 type IssuesScoringConfig struct {
 	MaxPenalty      float64 `mapstructure:"max_penalty"`
 	Enabled         bool    `mapstructure:"enabled"`
-	OpenClosedRatio float64 `mapstructure:"open_closed_ratio"`
+	ClosedOpenRatio float64 `mapstructure:"closed_open_ratio"`
 }
 
 type CommitActivityConfig struct {

@@ -25,9 +25,9 @@ func (s IssueScorer) GetScore(currentScore float64, penalties []ScoringPenalty) 
 		}
 	}
 
-	ratio := (closed / open) * 100
+	ratio := open / closed
 	scoreChange := s.config.MaxPenalty
-	if ratio > s.config.OpenClosedRatio {
+	if ratio <= s.config.ClosedOpenRatio {
 		scoreChange = 0
 	}
 
@@ -35,7 +35,7 @@ func (s IssueScorer) GetScore(currentScore float64, penalties []ScoringPenalty) 
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("Closed-Open Ratio on issues is below %.2f%% (*%.2f%%*)", s.config.OpenClosedRatio, ratio),
+			Reason: fmt.Sprintf("Closed-Open Ratio on issues is below 1:%.2f (*1:%.2f*)", s.config.ClosedOpenRatio, ratio),
 			Amount: scoreChange,
 		})
 	}

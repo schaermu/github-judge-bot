@@ -7,20 +7,21 @@ import (
 	"github.com/schaermu/go-github-judge-bot/helpers"
 )
 
-func getTestStarsScorer(stars int, minStars int) StarsScorer {
-	return StarsScorer{
+func getTestLicenseScorer(license string, validLicenses []string) LicenseScorer {
+	return LicenseScorer{
 		data: helpers.GithubRepoInfo{
-			Stars: stars,
+			License:   license,
+			LicenseId: license,
 		},
-		config: config.StarsScoringConfig{
-			MaxPenalty: 2.0,
-			MinStars:   minStars,
+		config: config.LicenseConfig{
+			MaxPenalty:      2.0,
+			ValidLicenseIds: validLicenses,
 		},
 	}
 }
 
-func TestStarsScorerGetScore(t *testing.T) {
-	scorer := getTestStarsScorer(800, 600)
+func TestLicenseScorerGetScore(t *testing.T) {
+	scorer := getTestLicenseScorer("MIT", nil)
 
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0
@@ -33,8 +34,8 @@ func TestStarsScorerGetScore(t *testing.T) {
 	}
 }
 
-func TestStarsScorerGetScorePenalty(t *testing.T) {
-	scorer := getTestStarsScorer(800, 900)
+func TestLicenseScorerGetScorePenalty(t *testing.T) {
+	scorer := getTestLicenseScorer("MIT", []string{"BSD", "Apache-2.0"})
 
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0

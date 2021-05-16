@@ -3,24 +3,35 @@ package scoring
 import (
 	"testing"
 
+	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/helpers"
 )
 
-func getTestStarsScorer(stars int, minStars int) StarsScorer {
-	return StarsScorer{
+func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssueCount int) IssueScorer {
+	issues := make([]*github.Issue, openIssueCount+closedIssueCount)
+	closed := "closed"
+	open := "open"
+	for i := 0; i < closedIssueCount; i++ {
+		issues = append(issues, &github.Issue{State: &closed})
+	}
+	for i := 0; i < openIssueCount; i++ {
+		issues = append(issues, &github.Issue{State: &open})
+	}
+
+	return IssueScorer{
 		data: helpers.GithubRepoInfo{
-			Stars: stars,
+			Issues: issues,
 		},
-		config: config.StarsScoringConfig{
-			MaxPenalty: 2.0,
-			MinStars:   minStars,
+		config: config.IssuesScoringConfig{
+			MaxPenalty:      2.0,
+			ClosedOpenRatio: closedOpenRatio,
 		},
 	}
 }
 
-func TestStarsScorerGetScore(t *testing.T) {
-	scorer := getTestStarsScorer(800, 600)
+func TestIssueScorerGetScore(t *testing.T) {
+	scorer := getTestIssueScorer(0.2, 20, 4)
 
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0
@@ -33,8 +44,8 @@ func TestStarsScorerGetScore(t *testing.T) {
 	}
 }
 
-func TestStarsScorerGetScorePenalty(t *testing.T) {
-	scorer := getTestStarsScorer(800, 900)
+func TestIssueScorerGetScorePenalty(t *testing.T) {
+	scorer := getTestIssueScorer(0.2, 20, 10)
 
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0
