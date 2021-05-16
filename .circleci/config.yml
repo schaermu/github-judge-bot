@@ -2,7 +2,7 @@ version: 2.1
 workflows:
   main:
     jobs:
-      - test
+      - build
       - release:
           # Only run this job on git tag pushes
           filters:
@@ -11,28 +11,41 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
 jobs:
-  test:
+  build:
     docker:
       - image: circleci/golang:1.16
+    parallelism: 2
+    environment:
+      TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
+      - run: mkdir -p $TEST_RESULTS
+
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
+
       - run:
           name: Install Dependencies
           command: go mod download
+
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
+
       - run:
           name: Run tests
           command: |
-            go test -race -coverprofile=coverage.out -covermode=atomic ./..
-            bash <(curl -s https://codecov.io/bash)
+            PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
+            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- $PACKAGE_NAMES
+
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+
       - store_test_results:
-          path: /tmp/test-reports
+          path: /tmp/test-results
   release:
     docker:
       - image: circleci/golang:1.16
