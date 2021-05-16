@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/schaermu/github-judge-bot/branch/main/graph/badge.svg?token=X6R1PQU7GT)](https://codecov.io/gh/schaermu/github-judge-bot) [![CircleCI](https://circleci.com/gh/schaermu/github-judge-bot.svg?style=shield )](https://circleci.com/gh/schaermu/github-judge-bot)
 # GitHub Judge Bot - Your OpenSource evaluation buddy
 This bot is a port of an [old node.js](https://github.com/schaermu/repolyzer-slackbot) project of mine. The Go code is probably not state-of-the-art, but this project is supposed to help me get to speed.
 
