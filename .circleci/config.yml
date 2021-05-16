@@ -1,8 +1,8 @@
-# .circleci/config.yml
 version: 2.1
 workflows:
   main:
     jobs:
+      - test
       - release:
           # Only run this job on git tag pushes
           filters:
