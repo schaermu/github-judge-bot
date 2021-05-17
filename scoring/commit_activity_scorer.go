@@ -24,7 +24,7 @@ func (s CommitActivityScorer) GetScore(currentScore float64, penalties []Scoring
 	}
 
 	if weeksWithoutActivity > 0 {
-		scoreChange := math.Min(float64(weeksWithoutActivity)*s.config.GetFloat64("weekly_inactivity_penalty"), s.config.MaxPenalty)
+		scoreChange := math.Min(float64(weeksWithoutActivity)*s.config.GetFloat64("weekly_penalty"), s.config.MaxPenalty)
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{

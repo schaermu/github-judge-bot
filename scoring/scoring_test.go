@@ -38,7 +38,7 @@ func TestCreateScorer(t *testing.T) {
 
 	for _, config := range config.Scorers {
 		scorer := CreateScorer(testData, config)
-		assert.Equalf(t, strcase.ToCamel(config.Name+"Scorer"), reflect.TypeOf(scorer).Name(), "Wrong scorer was created")
+		assert.Equal(t, strcase.ToCamel(config.Name+"Scorer"), reflect.TypeOf(scorer).Name())
 	}
 }
 
@@ -52,6 +52,6 @@ func TestGetTotalScore(t *testing.T) {
 	_, maxScore := CreateScorerMap(testData, config.Scorers)
 
 	score, penalties := GetTotalScore(testData, config.Scorers)
-	assert.NotEqual(t, maxScore, score, "Score should not be equal to max score after evaluation")
-	assert.NotEmpty(t, penalties, "Penalties should not be empty after evaluation")
+	assert.NotEqual(t, maxScore, score)
+	assert.NotEmpty(t, penalties)
 }

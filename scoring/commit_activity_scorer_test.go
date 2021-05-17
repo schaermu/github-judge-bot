@@ -35,7 +35,7 @@ func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) 
 		config: config.ScorerConfig{
 			MaxPenalty: 2.0,
 			Settings: map[string]string{
-				"weekly_inactivity_penalty": fmt.Sprintf("%.2f", penaltyPerWeek),
+				"weekly_penalty": fmt.Sprintf("%.2f", penaltyPerWeek),
 			},
 		},
 	}

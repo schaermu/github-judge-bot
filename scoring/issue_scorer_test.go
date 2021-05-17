@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/stretchr/testify/assert"
 )
 
 func getTestIssueData(closedOpenRatio float64, closedIssueCount int, openIssueCount int) []*github.Issue {
@@ -42,12 +43,11 @@ func TestIssueScorerGetScore(t *testing.T) {
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
-	if score != 10 {
-		t.Errorf("GetScore() failed, expected score to be 10, got %.2f", score)
-	}
-	if len(penalties) > 0 {
-		t.Errorf("GetScore() failed, expected no penalties, got %d", len(penalties))
-	}
+
+	expectedScore := 10.0
+
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 0)
 }
 
 func TestIssueScorerGetScorePenalty(t *testing.T) {
@@ -60,13 +60,7 @@ func TestIssueScorerGetScorePenalty(t *testing.T) {
 	expectedScore := 8.0
 	expectedPenalty := 2.0
 
-	if score != expectedScore {
-		t.Errorf("GetScore() failed, expected score to be %.2f, got %.2f", expectedScore, score)
-	}
-	if len(penalties) == 0 {
-		t.Errorf("GetScore() failed, expected 1 penalty, got %d", len(penalties))
-	}
-	if penalties[0].Amount != expectedPenalty {
-		t.Errorf("GetScore() failed, expected penalty amount of %.2f, got %.2f", expectedPenalty, penalties[0].Amount)
-	}
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 1)
+	assert.Equal(t, expectedPenalty, penalties[0].Amount)
 }
