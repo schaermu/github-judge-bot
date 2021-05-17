@@ -12,8 +12,11 @@ import (
 )
 
 func getTestCommitActivityData(inactiveWeekCount int) []*github.WeeklyCommitActivity {
-	// prepare commit activity data
+	// prepare commit activity data: first an active week, then append inactive ones (we loop in reverse)
 	activity := make([]*github.WeeklyCommitActivity, 0)
+	one := 1
+	firstActiveTime := github.Timestamp{Time: time.Now().Local().AddDate(0, 0, -7*inactiveWeekCount+2)}
+	activity = append(activity, &github.WeeklyCommitActivity{Week: &firstActiveTime, Total: &one})
 	if inactiveWeekCount > 0 {
 		zero := 0
 		for i := 1; i < inactiveWeekCount+1; i++ {
@@ -21,9 +24,6 @@ func getTestCommitActivityData(inactiveWeekCount int) []*github.WeeklyCommitActi
 			activity = append(activity, &github.WeeklyCommitActivity{Week: &time, Total: &zero})
 		}
 	}
-	one := 1
-	firstActiveTime := github.Timestamp{Time: time.Now().Local().AddDate(0, 0, -7*inactiveWeekCount+2)}
-	activity = append(activity, &github.WeeklyCommitActivity{Week: &firstActiveTime, Total: &one})
 	return activity
 }
 

@@ -15,7 +15,9 @@ type CommitActivityScorer struct {
 
 func (s CommitActivityScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
 	weeksWithoutActivity := 0
-	for _, commit := range s.data.CommitActivity {
+	// loop in reverse because we get oldest first from github
+	for i := len(s.data.CommitActivity) - 1; i >= 0; i-- {
+		commit := s.data.CommitActivity[i]
 		if commit.GetTotal() == 0 {
 			weeksWithoutActivity++
 		} else {
