@@ -5,8 +5,8 @@ slack:
   debug: false
 debug: false
 github:
-  username: <INSERT_GH_USERNAME>
-  access_token: <INSERT_GH_PERSONAL_ACCESS_TOKEN>
+  username: <INSERT_GH_USERNAME> # optional
+  access_token: <INSERT_GH_PERSONAL_ACCESS_TOKEN> # optional
 scorers:
   - name: stars
     max_penalty: 2.0
@@ -16,7 +16,7 @@ scorers:
     max_penalty: 2.0
     settings:
       closed_open_ratio: "0.2" # maximum of open tickets per closed ones
-  - name: activity
+  - name: commit-activity
     max_penalty: 3.0
     settings:
       weekly_penalty: "0.1"

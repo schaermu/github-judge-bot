@@ -3,6 +3,7 @@ package helpers
 import (
 	"context"
 	"errors"
+	"net/http"
 	"regexp"
 	"sync"
 
@@ -26,11 +27,16 @@ type GithubHelper struct {
 }
 
 func (gh GithubHelper) GetRepositoryData(repoUrl string) (info GithubRepoInfo, err error) {
-	tp := github.BasicAuthTransport{
-		Username: gh.Config.Username,
-		Password: gh.Config.PersonalAccessToken,
+	tp := http.DefaultClient
+	if gh.Config.Username != "" && gh.Config.PersonalAccessToken != "" {
+		basicAuth := github.BasicAuthTransport{
+			Username: gh.Config.Username,
+			Password: gh.Config.PersonalAccessToken,
+		}
+		tp = basicAuth.Client()
 	}
-	client := github.NewClient(tp.Client())
+
+	client := github.NewClient(tp)
 	ctx := context.Background()
 
 	org, repo, err := ExtractInfoFromUrl(repoUrl)

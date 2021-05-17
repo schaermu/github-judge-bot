@@ -29,9 +29,16 @@ Copy `config.yaml.example` to `config.yaml`.
 10) Go back to *OAuth & Permissions* and install the bot in your workspace.
 11) Copy the Bot token to the config (`slack.bot_token`)
 
-## GitHub
+## GitHub (optional)
+
+**IMPORTANT**: For unauthenticated requests, the rate limit allows for up to **60 requests per hour**. Unauthenticated requests are associated with the originating IP address, and not the user making requests.
+
+If you want increase this limit (up to 5'000), you need to configure an access token.
+
 1) Create a new [Personal Access Token](https://github.com/settings/tokens) with the `repo:public_repo` permission.
 2) Copy the token to the config (`github.access_token`) and set up your username in GitHub.
+
+
 
 # Running
 You can either run the pre-compiled binary or you can use docker (recommended).

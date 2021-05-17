@@ -2,6 +2,7 @@ package config
 
 import (
 	"io"
+	"strings"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
@@ -94,6 +95,7 @@ func (s ScorerConfig) GetSlice(key string) []string {
 func New(rdr io.Reader) (config Config, err error) {
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	err = viper.ReadConfig(rdr)
 	if err != nil {
