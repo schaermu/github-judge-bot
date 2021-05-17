@@ -1,8 +1,38 @@
 package config
 
 import (
+	"io"
+
+	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
+
+var fullTestConfig = []byte(`
+debug: false
+scorers:
+  - name: stars
+    max_penalty: 2.0
+    settings:
+        min_stars: 800
+  - name: issues
+    max_penalty: 2.0
+    settings:
+        closed_open_ratio: 0.2 # maximum of open tickets per closed ones
+  - name: commit-activity
+    max_penalty: 3.0
+    settings:
+        weekly_penalty: 0.1
+  - name: contributors
+    max_penalty: 1.0
+    settings:
+        min_contributors: 3
+  - name: license
+    max_penalty: 2.0
+`)
+
+func GetTestConfig() []byte {
+	return fullTestConfig
+}
 
 type SlackConfig struct {
 	BotToken   string `mapstructure:"bot_token"`
@@ -16,64 +46,61 @@ type GithubConfig struct {
 	PersonalAccessToken string `mapstructure:"access_token"`
 }
 
-type ScoringConfig struct {
-	MaxScore       float64              `mapstructure:"max_score"`
-	Stars          StarsScoringConfig   `mapstructure:"stars"`
-	Issues         IssuesScoringConfig  `mapstructure:"issues"`
-	CommitActivity CommitActivityConfig `mapstructure:"activity"`
-	Contributors   ContributorsConfig   `mapstructure:"contributors"`
-	License        LicenseConfig        `mapstructure:"license"`
-}
-
-type StarsScoringConfig struct {
-	MaxPenalty float64 `mapstructure:"max_penalty"`
-	Enabled    bool    `mapstructure:"enabled"`
-	MinStars   int     `mapstructure:"min_stars"`
-}
-
-type IssuesScoringConfig struct {
-	MaxPenalty      float64 `mapstructure:"max_penalty"`
-	Enabled         bool    `mapstructure:"enabled"`
-	ClosedOpenRatio float64 `mapstructure:"closed_open_ratio"`
-}
-
-type CommitActivityConfig struct {
-	MaxPenalty              float64 `mapstructure:"max_penalty"`
-	Enabled                 bool    `mapstructure:"enabled"`
-	WeeklyInactivityPenalty float64 `mapstructure:"weekly_penalty"`
-}
-
-type ContributorsConfig struct {
-	MaxPenalty      float64 `mapstructure:"max_penalty"`
-	Enabled         bool    `mapstructure:"enabled"`
-	MinContributors int     `mapstructure:"min_contributors"`
-}
-
-type LicenseConfig struct {
-	MaxPenalty      float64  `mapstructure:"max_penalty"`
-	Enabled         bool     `mapstructure:"enabled"`
-	ValidLicenseIds []string `mapstructure:"valid_license_ids"`
-}
-
 type Config struct {
-	Slack     SlackConfig   `mapstructure:"slack"`
-	Github    GithubConfig  `mapstructure:"github"`
-	Score     ScoringConfig `mapstructure:"scoring"`
-	DebugMode bool          `mapstructure:"debug"`
+	Slack     SlackConfig    `mapstructure:"slack"`
+	Github    GithubConfig   `mapstructure:"github"`
+	Scorers   []ScorerConfig `mapstructure:"scorers"`
+	DebugMode bool           `mapstructure:"debug"`
 }
 
-func New() (config Config, err error) {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("config.yaml")
-	viper.SetConfigType("yaml")
+type ScorerConfig struct {
+	Name       string            `mapstructure:"name"`
+	MaxPenalty float64           `mapstructure:"max_penalty"`
+	Enabled    bool              `mapstructure:"enabled"`
+	Settings   map[string]string `mapstructure:"settings"`
+}
 
+func (s ScorerConfig) Get(key string) string {
+	if val, found := s.Settings[key]; found {
+		return val
+	}
+	return ""
+}
+
+func (s ScorerConfig) GetFloat64(key string) float64 {
+	val := s.Get(key)
+	if val != "" {
+		return cast.ToFloat64(val)
+	}
+	return 0
+}
+
+func (s ScorerConfig) GetInt(key string) int {
+	val := s.Get(key)
+	if val != "" {
+		return cast.ToInt(val)
+	}
+	return 0
+}
+
+func (s ScorerConfig) GetSlice(key string) []string {
+	val := s.Get(key)
+	if val != "" {
+		return cast.ToStringSlice(val)
+	}
+	return []string{}
+}
+
+func New(rdr io.Reader) (config Config, err error) {
+	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err = viper.ReadConfig(rdr)
 	if err != nil {
 		return
 	}
 
 	err = viper.Unmarshal(&config)
+
 	return
 }

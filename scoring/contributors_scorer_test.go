@@ -1,14 +1,16 @@
 package scoring
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/stretchr/testify/assert"
 )
 
-func getTestContributorScorer(contributorCount int, minContributors int) ContributorScorer {
+func getTestContributorData(contributorCount int) []*github.ContributorStats {
 	// prepare commit activity data
 	contributors := make([]*github.ContributorStats, 0)
 	if contributorCount > 0 {
@@ -16,14 +18,19 @@ func getTestContributorScorer(contributorCount int, minContributors int) Contrib
 			contributors = append(contributors, &github.ContributorStats{})
 		}
 	}
+	return contributors
+}
 
-	return ContributorScorer{
+func getTestContributorScorer(contributorCount int, minContributors int) ContributorsScorer {
+	return ContributorsScorer{
 		data: helpers.GithubRepoInfo{
-			Contributors: contributors,
+			Contributors: getTestContributorData(contributorCount),
 		},
-		config: config.ContributorsConfig{
-			MaxPenalty:      2.0,
-			MinContributors: minContributors,
+		config: config.ScorerConfig{
+			MaxPenalty: 2.0,
+			Settings: map[string]string{
+				"min_contributors": fmt.Sprintf("%d", minContributors),
+			},
 		},
 	}
 }
@@ -34,12 +41,11 @@ func TestContributorScorerGetScore(t *testing.T) {
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
-	if score != 10 {
-		t.Errorf("GetScore() failed, expected score to be 10, got %.2f", score)
-	}
-	if len(penalties) > 0 {
-		t.Errorf("GetScore() failed, expected no penalties, got %d", len(penalties))
-	}
+
+	expectedScore := 10.0
+
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 0)
 }
 
 func TestContributorScorerGetScorePenalty(t *testing.T) {
@@ -52,15 +58,9 @@ func TestContributorScorerGetScorePenalty(t *testing.T) {
 	expectedScore := 9.2
 	expectedPenalty := 0.8
 
-	if score != expectedScore {
-		t.Errorf("GetScore() failed, expected score to be %.2f, got %.2f", expectedScore, score)
-	}
-	if len(penalties) == 0 {
-		t.Errorf("GetScore() failed, expected 1 penalty, got %d", len(penalties))
-	}
-	if penalties[0].Amount != expectedPenalty {
-		t.Errorf("GetScore() failed, expected penalty amount of %.2f, got %.2f", expectedPenalty, penalties[0].Amount)
-	}
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 1)
+	assert.Equal(t, expectedPenalty, penalties[0].Amount)
 }
 
 func TestContributorScorerGetScoreCappedPenalty(t *testing.T) {
@@ -73,13 +73,7 @@ func TestContributorScorerGetScoreCappedPenalty(t *testing.T) {
 	expectedScore := 8.0
 	expectedPenalty := 2.0
 
-	if score != expectedScore {
-		t.Errorf("GetScore() failed, expected score to be %.2f, got %.2f", expectedScore, score)
-	}
-	if len(penalties) == 0 {
-		t.Errorf("GetScore() failed, expected 1 penalty, got %d", len(penalties))
-	}
-	if penalties[0].Amount != expectedPenalty {
-		t.Errorf("GetScore() failed, expected penalty amount of %.2f, got %.2f", expectedPenalty, penalties[0].Amount)
-	}
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 1)
+	assert.Equal(t, expectedPenalty, penalties[0].Amount)
 }

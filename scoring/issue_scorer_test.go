@@ -1,6 +1,7 @@
 package scoring
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-github/v35/github"
@@ -8,7 +9,7 @@ import (
 	"github.com/schaermu/go-github-judge-bot/helpers"
 )
 
-func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssueCount int) IssueScorer {
+func getTestIssueData(closedOpenRatio float64, closedIssueCount int, openIssueCount int) []*github.Issue {
 	issues := make([]*github.Issue, openIssueCount+closedIssueCount)
 	closed := "closed"
 	open := "open"
@@ -18,14 +19,19 @@ func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssue
 	for i := 0; i < openIssueCount; i++ {
 		issues = append(issues, &github.Issue{State: &open})
 	}
+	return issues
+}
 
-	return IssueScorer{
+func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssueCount int) IssuesScorer {
+	return IssuesScorer{
 		data: helpers.GithubRepoInfo{
-			Issues: issues,
+			Issues: getTestIssueData(closedOpenRatio, closedIssueCount, openIssueCount),
 		},
-		config: config.IssuesScoringConfig{
-			MaxPenalty:      2.0,
-			ClosedOpenRatio: closedOpenRatio,
+		config: config.ScorerConfig{
+			MaxPenalty: 2.0,
+			Settings: map[string]string{
+				"closed_open_ratio": fmt.Sprintf("%.2f", closedOpenRatio),
+			},
 		},
 	}
 }

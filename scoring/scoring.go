@@ -1,8 +1,6 @@
 package scoring
 
 import (
-	"math/big"
-
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/helpers"
 )
@@ -13,26 +11,42 @@ type ScoringPenalty struct {
 }
 
 type Scorer interface {
-	Score(currentScore *big.Rat, penalties []ScoringPenalty, data helpers.GithubRepoInfo)
+	GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty)
 }
 
-func GetTotalScore(data helpers.GithubRepoInfo, scoreConfig config.ScoringConfig) (score float64, penalties []ScoringPenalty) {
-	score = scoreConfig.MaxScore
+func CreateScorer(data helpers.GithubRepoInfo, config config.ScorerConfig) Scorer {
+	switch config.Name {
+	case "stars":
+		return StarsScorer{data: data, config: config}
+	case "issues":
+		return IssuesScorer{data: data, config: config}
+	case "commit-activity":
+		return CommitActivityScorer{data: data, config: config}
+	case "contributors":
+		return ContributorsScorer{data: data, config: config}
+	case "license":
+		return LicenseScorer{data: data, config: config}
+	default:
+		return nil
+	}
+}
 
-	stars := StarsScorer{data: data, config: scoreConfig.Stars}
-	score, penalties = stars.GetScore(score, penalties)
+func CreateScorerMap(data helpers.GithubRepoInfo, configs []config.ScorerConfig) (scorers map[string]Scorer, score float64) {
+	// create map of all scorers and initialize score to maximum possible
+	scorers = map[string]Scorer{}
+	for _, config := range configs {
+		scorers[config.Name] = CreateScorer(data, config)
+		score += config.MaxPenalty
+	}
+	return
+}
 
-	issues := IssueScorer{data: data, config: scoreConfig.Issues}
-	score, penalties = issues.GetScore(score, penalties)
-
-	commitActivity := CommitActivityScorer{data: data, config: scoreConfig.CommitActivity}
-	score, penalties = commitActivity.GetScore(score, penalties)
-
-	contributors := ContributorScorer{data: data, config: scoreConfig.Contributors}
-	score, penalties = contributors.GetScore(score, penalties)
-
-	license := LicenseScorer{data: data, config: scoreConfig.License}
-	score, penalties = license.GetScore(score, penalties)
+func GetTotalScore(data helpers.GithubRepoInfo, scorers []config.ScorerConfig) (score float64, penalties []ScoringPenalty) {
+	scorerMap, score := CreateScorerMap(data, scorers)
+	// execute scorers
+	for _, scorer := range scorerMap {
+		score, penalties = scorer.GetScore(score, penalties)
+	}
 
 	return score, penalties
 }

@@ -1,6 +1,7 @@
 package scoring
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/schaermu/go-github-judge-bot/config"
@@ -13,9 +14,11 @@ func getTestLicenseScorer(license string, validLicenses []string) LicenseScorer 
 			License:   license,
 			LicenseId: license,
 		},
-		config: config.LicenseConfig{
-			MaxPenalty:      2.0,
-			ValidLicenseIds: validLicenses,
+		config: config.ScorerConfig{
+			MaxPenalty: 2.0,
+			Settings: map[string]string{
+				"valid_license_ids": strings.Join(validLicenses, ","),
+			},
 		},
 	}
 }

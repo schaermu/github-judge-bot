@@ -9,16 +9,17 @@ import (
 
 type StarsScorer struct {
 	data   helpers.GithubRepoInfo
-	config config.StarsScoringConfig
+	config config.ScorerConfig
 }
 
 func (s StarsScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
-	if s.data.Stars < s.config.MinStars {
+	reqStars := s.config.GetInt("min_stars")
+	if s.data.Stars < reqStars {
 		scoreChange := s.config.MaxPenalty
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("Less than %d stars (*%d* stars)", s.config.MinStars, s.data.Stars),
+			Reason: fmt.Sprintf("Less than %d stars (*%d* stars)", reqStars, s.data.Stars),
 			Amount: scoreChange,
 		})
 	}

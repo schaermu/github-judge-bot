@@ -10,24 +10,25 @@ import (
 
 type LicenseScorer struct {
 	data   helpers.GithubRepoInfo
-	config config.LicenseConfig
+	config config.ScorerConfig
 }
 
 func (s LicenseScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
 	// the license of the project is either checked against a whitelist or against all osi approved licenses from spdx
 	scoreChange := 0.0
-	if len(s.config.ValidLicenseIds) == 0 {
+	validIds := s.config.GetSlice("valid_license_ids")
+	if len(validIds) == 0 {
 		// TODO: cache this list
 		list, _ := spdx.List()
 		for _, spdxLic := range list.Licenses {
 			if spdxLic.OSIApproved && !spdxLic.Deprecated {
-				s.config.ValidLicenseIds = append(s.config.ValidLicenseIds, spdxLic.ID)
+				validIds = append(validIds, spdxLic.ID)
 			}
 		}
 	}
 
 	scoreChange = s.config.MaxPenalty
-	for _, id := range s.config.ValidLicenseIds {
+	for _, id := range validIds {
 		if id == s.data.LicenseId {
 			scoreChange = 0
 			break

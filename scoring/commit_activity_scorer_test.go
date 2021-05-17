@@ -1,15 +1,17 @@
 package scoring
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/stretchr/testify/assert"
 )
 
-func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) CommitActivityScorer {
+func getTestCommitActivityData(inactiveWeekCount int) []*github.WeeklyCommitActivity {
 	// prepare commit activity data
 	activity := make([]*github.WeeklyCommitActivity, 0)
 	if inactiveWeekCount > 0 {
@@ -22,33 +24,37 @@ func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) 
 	one := 1
 	firstActiveTime := github.Timestamp{Time: time.Now().Local().AddDate(0, 0, -7*inactiveWeekCount+2)}
 	activity = append(activity, &github.WeeklyCommitActivity{Week: &firstActiveTime, Total: &one})
+	return activity
+}
 
+func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) CommitActivityScorer {
 	return CommitActivityScorer{
 		data: helpers.GithubRepoInfo{
-			CommitActivity: activity,
+			CommitActivity: getTestCommitActivityData(inactiveWeekCount),
 		},
-		config: config.CommitActivityConfig{
-			MaxPenalty:              2.0,
-			WeeklyInactivityPenalty: penaltyPerWeek,
+		config: config.ScorerConfig{
+			MaxPenalty: 2.0,
+			Settings: map[string]string{
+				"weekly_inactivity_penalty": fmt.Sprintf("%.2f", penaltyPerWeek),
+			},
 		},
 	}
 }
 
-func TestActivityScorerGetScore(t *testing.T) {
+func TestCommitActivityScorerGetScore(t *testing.T) {
 	scorer := getTestCommitActivityScorer(0, 0.25)
 
 	penalties := make([]ScoringPenalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
-	if score != 10 {
-		t.Errorf("GetScore() failed, expected score to be 10, got %.2f", score)
-	}
-	if len(penalties) > 0 {
-		t.Errorf("GetScore() failed, expected no penalties, got %d", len(penalties))
-	}
+
+	expectedScore := 10.0
+
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 0)
 }
 
-func TestActivityScorerGetScorePenalty(t *testing.T) {
+func TestCommitActivityScorerGetScorePenalty(t *testing.T) {
 	scorer := getTestCommitActivityScorer(2, 0.25)
 
 	penalties := make([]ScoringPenalty, 0)
@@ -58,18 +64,12 @@ func TestActivityScorerGetScorePenalty(t *testing.T) {
 	expectedScore := 9.5
 	expectedPenalty := 0.5
 
-	if score != expectedScore {
-		t.Errorf("GetScore() failed, expected score to be %.2f, got %.2f", expectedScore, score)
-	}
-	if len(penalties) == 0 {
-		t.Errorf("GetScore() failed, expected 1 penalty, got %d", len(penalties))
-	}
-	if penalties[0].Amount != expectedPenalty {
-		t.Errorf("GetScore() failed, expected penalty amount of %.2f, got %.2f", expectedPenalty, penalties[0].Amount)
-	}
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 1)
+	assert.Equal(t, expectedPenalty, penalties[0].Amount)
 }
 
-func TestActivityScorerGetScoreCappedPenalty(t *testing.T) {
+func TestCommitActivityScorerGetScoreCappedPenalty(t *testing.T) {
 	scorer := getTestCommitActivityScorer(40, 0.25)
 
 	penalties := make([]ScoringPenalty, 0)
@@ -79,13 +79,7 @@ func TestActivityScorerGetScoreCappedPenalty(t *testing.T) {
 	expectedScore := 8.0
 	expectedPenalty := 2.0
 
-	if score != expectedScore {
-		t.Errorf("GetScore() failed, expected score to be %.2f, got %.2f", expectedScore, score)
-	}
-	if len(penalties) == 0 {
-		t.Errorf("GetScore() failed, expected 1 penalty, got %d", len(penalties))
-	}
-	if penalties[0].Amount != expectedPenalty {
-		t.Errorf("GetScore() failed, expected penalty amount of %.2f, got %.2f", expectedPenalty, penalties[0].Amount)
-	}
+	assert.Equal(t, expectedScore, score)
+	assert.Len(t, penalties, 1)
+	assert.Equal(t, expectedPenalty, penalties[0].Amount)
 }

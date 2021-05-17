@@ -7,8 +7,22 @@ debug: false
 github:
   username: <INSERT_GH_USERNAME>
   access_token: <INSERT_GH_PERSONAL_ACCESS_TOKEN>
-scoring:
-  stars:
-    min_stars: 800
+scorers:
+  - name: stars
     max_penalty: 2.0
-    
+    settings:
+      min_stars: "800"
+  - name: issues
+    max_penalty: 2.0
+    settings:
+      closed_open_ratio: "0.2" # maximum of open tickets per closed ones
+  - name: activity
+    max_penalty: 3.0
+    settings:
+      weekly_penalty: "0.1"
+  - name: contributors
+    max_penalty: 1.0
+    settings:
+      min_contributors: "3"
+  - name: license
+    max_penalty: 2.0

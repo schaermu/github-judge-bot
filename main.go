@@ -16,7 +16,13 @@ import (
 )
 
 func main() {
-	cfg, err := config.New()
+	f, err := os.Open("config.yaml")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	cfg, err := config.New(f)
 	if err != nil {
 		fmt.Println("Failed to load config, aborting...")
 		return
@@ -72,7 +78,7 @@ func main() {
 								fmt.Printf("Error while fetching github info: %e", err)
 							}
 
-							score, penalties := scoring.GetTotalScore(info, cfg.Score)
+							score, penalties := scoring.GetTotalScore(info, cfg.Scorers)
 							msgBlocks := buildSlackResponse(info.OrgName, info.RepositoryName, score, penalties)
 							api.PostMessage(ev.Channel, msgBlocks...)
 						}

@@ -1,6 +1,7 @@
 package scoring
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/schaermu/go-github-judge-bot/config"
@@ -12,9 +13,11 @@ func getTestStarsScorer(stars int, minStars int) StarsScorer {
 		data: helpers.GithubRepoInfo{
 			Stars: stars,
 		},
-		config: config.StarsScoringConfig{
+		config: config.ScorerConfig{
 			MaxPenalty: 2.0,
-			MinStars:   minStars,
+			Settings: map[string]string{
+				"min_stars": fmt.Sprintf("%d", minStars),
+			},
 		},
 	}
 }

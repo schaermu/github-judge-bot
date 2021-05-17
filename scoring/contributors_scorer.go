@@ -8,14 +8,16 @@ import (
 	"github.com/schaermu/go-github-judge-bot/helpers"
 )
 
-type ContributorScorer struct {
+type ContributorsScorer struct {
+	Scorer
 	data   helpers.GithubRepoInfo
-	config config.ContributorsConfig
+	config config.ScorerConfig
 }
 
-func (s ContributorScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
+func (s ContributorsScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
 	// we calculate the percentage of contributors vs. required contributors and apply that percentage as a penalty
-	percentage := 100 / float64(s.config.MinContributors) * float64(len(s.data.Contributors))
+	minContribs := s.config.GetInt("min_contributors")
+	percentage := 100 / float64(minContribs) * float64(len(s.data.Contributors))
 	scoreChange := 0.0
 	if percentage < 100 {
 		unrounded := (100 - percentage) * (s.config.MaxPenalty / 100)
@@ -27,7 +29,7 @@ func (s ContributorScorer) GetScore(currentScore float64, penalties []ScoringPen
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("There are only *%d/%d* required contributors", len(s.data.Contributors), s.config.MinContributors),
+			Reason: fmt.Sprintf("There are only *%d/%d* required contributors", len(s.data.Contributors), minContribs),
 			Amount: scoreChange,
 		})
 	}
