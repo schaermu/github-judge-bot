@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +29,7 @@ func getTestCommitActivityData(inactiveWeekCount int) []*github.WeeklyCommitActi
 
 func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) CommitActivityScorer {
 	return CommitActivityScorer{
-		data: helpers.GithubRepoInfo{
+		data: data.GithubRepoInfo{
 			CommitActivity: getTestCommitActivityData(inactiveWeekCount),
 		},
 		config: config.ScorerConfig{

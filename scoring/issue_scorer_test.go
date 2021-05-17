@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,7 +25,7 @@ func getTestIssueData(closedOpenRatio float64, closedIssueCount int, openIssueCo
 
 func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssueCount int) IssuesScorer {
 	return IssuesScorer{
-		data: helpers.GithubRepoInfo{
+		data: data.GithubRepoInfo{
 			Issues: getTestIssueData(closedOpenRatio, closedIssueCount, openIssueCount),
 		},
 		config: config.ScorerConfig{

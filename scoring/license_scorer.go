@@ -5,11 +5,11 @@ import (
 
 	"github.com/mitchellh/go-spdx"
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 )
 
 type LicenseScorer struct {
-	data   helpers.GithubRepoInfo
+	data   data.GithubRepoInfo
 	config config.ScorerConfig
 }
 

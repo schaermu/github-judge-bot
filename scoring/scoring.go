@@ -2,7 +2,7 @@ package scoring
 
 import (
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 )
 
 type ScoringPenalty struct {
@@ -14,7 +14,7 @@ type Scorer interface {
 	GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty)
 }
 
-func CreateScorer(data helpers.GithubRepoInfo, config config.ScorerConfig) Scorer {
+func CreateScorer(data data.GithubRepoInfo, config config.ScorerConfig) Scorer {
 	switch config.Name {
 	case "stars":
 		return StarsScorer{data: data, config: config}
@@ -31,7 +31,7 @@ func CreateScorer(data helpers.GithubRepoInfo, config config.ScorerConfig) Score
 	}
 }
 
-func CreateScorerMap(data helpers.GithubRepoInfo, configs []config.ScorerConfig) (scorers map[string]Scorer, score float64) {
+func CreateScorerMap(data data.GithubRepoInfo, configs []config.ScorerConfig) (scorers map[string]Scorer, score float64) {
 	// create map of all scorers and initialize score to maximum possible
 	scorers = map[string]Scorer{}
 	for _, config := range configs {
@@ -41,12 +41,13 @@ func CreateScorerMap(data helpers.GithubRepoInfo, configs []config.ScorerConfig)
 	return
 }
 
-func GetTotalScore(data helpers.GithubRepoInfo, scorers []config.ScorerConfig) (score float64, penalties []ScoringPenalty) {
-	scorerMap, score := CreateScorerMap(data, scorers)
+func GetTotalScore(data data.GithubRepoInfo, scorers []config.ScorerConfig) (score float64, maxScore float64, penalties []ScoringPenalty) {
+	scorerMap, maxScore := CreateScorerMap(data, scorers)
+	score = maxScore
 	// execute scorers
 	for _, scorer := range scorerMap {
 		score, penalties = scorer.GetScore(score, penalties)
 	}
 
-	return score, penalties
+	return score, maxScore, penalties
 }

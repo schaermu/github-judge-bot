@@ -3,30 +3,23 @@ package helpers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"sync"
 
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
+	"github.com/schaermu/go-github-judge-bot/data"
+	"github.com/schaermu/go-github-judge-bot/scoring"
+	"github.com/slack-go/slack"
 )
-
-type GithubRepoInfo struct {
-	OrgName        string
-	RepositoryName string
-	Stars          int
-	License        string
-	LicenseId      string
-	Issues         []*github.Issue
-	CommitActivity []*github.WeeklyCommitActivity
-	Contributors   []*github.ContributorStats
-}
 
 type GithubHelper struct {
 	Config config.GithubConfig
 }
 
-func (gh GithubHelper) GetRepositoryData(repoUrl string) (info GithubRepoInfo, err error) {
+func (gh GithubHelper) GetRepositoryData(repoUrl string) (info data.GithubRepoInfo, err error) {
 	tp := http.DefaultClient
 	if gh.Config.Username != "" && gh.Config.PersonalAccessToken != "" {
 		basicAuth := github.BasicAuthTransport{
@@ -49,7 +42,7 @@ func (gh GithubHelper) GetRepositoryData(repoUrl string) (info GithubRepoInfo, e
 		return
 	}
 
-	info = GithubRepoInfo{
+	info = data.GithubRepoInfo{
 		OrgName:        org,
 		RepositoryName: repo,
 		Stars:          repoInfo.GetStargazersCount(),
@@ -70,19 +63,19 @@ func (gh GithubHelper) GetRepositoryData(repoUrl string) (info GithubRepoInfo, e
 	return
 }
 
-func getContributorStats(info *GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
+func getContributorStats(info *data.GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
 	contributors, _, _ := client.Repositories.ListContributorsStats(context.Background(), info.OrgName, info.RepositoryName)
 	info.Contributors = contributors
 	waitgroup.Done()
 }
 
-func getCommitActivity(info *GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
+func getCommitActivity(info *data.GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
 	commitActivity, _, _ := client.Repositories.ListCommitActivity(context.Background(), info.OrgName, info.RepositoryName)
 	info.CommitActivity = commitActivity
 	waitgroup.Done()
 }
 
-func getRepoIssues(info *GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
+func getRepoIssues(info *data.GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
 	issues, _, _ := client.Issues.ListByRepo(context.Background(), info.OrgName, info.RepositoryName, &github.IssueListByRepoOptions{
 		Sort:  "updated",
 		State: "all",
@@ -98,4 +91,45 @@ func ExtractInfoFromUrl(repoUrl string) (org string, repo string, err error) {
 		return "", "", errors.New("could not determine organization and/or repository name from url")
 	}
 	return matches[1], matches[2], nil
+}
+
+func GetSlackMessageColorAndIcon(score float64, maxScore float64) (color string, icon string) {
+	if maxScore/100*score < .4 {
+		return "danger", ":exclamation:"
+	}
+	if maxScore/100*score < .8 {
+		return "warning", ":warning:"
+	}
+	return "good", ":+1::skin-tone-2:"
+}
+
+func BuildSlackResponse(org string, repository string, score float64, maxScore float64, penalties []scoring.ScoringPenalty) []slack.MsgOption {
+	messageColor, messageIcon := GetSlackMessageColorAndIcon(score, maxScore)
+
+	// build default message
+	res := []slack.MsgOption{
+		slack.MsgOptionIconEmoji(messageIcon),
+		slack.MsgOptionText(fmt.Sprintf("Analysis of `%s/%s` complete, final score is *%.2f/10.00* points!", org, repository, score), false),
+	}
+
+	// append penalty attachment containing details
+	if len(penalties) > 0 {
+		penaltyOutput := ""
+		for _, penalty := range penalties {
+			penaltyOutput += fmt.Sprintf("-*%.2f* _%s_\n", penalty.Amount, penalty.Reason)
+		}
+
+		attachment := slack.MsgOptionAttachments(
+			slack.Attachment{
+				Color:      messageColor,
+				MarkdownIn: []string{"text"},
+				Text:       penaltyOutput,
+				Pretext:    "The following reasons lead to penalties",
+			},
+		)
+
+		res = append(res, attachment)
+	}
+
+	return res
 }

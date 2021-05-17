@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +23,7 @@ func getTestContributorData(contributorCount int) []*github.ContributorStats {
 
 func getTestContributorScorer(contributorCount int, minContributors int) ContributorsScorer {
 	return ContributorsScorer{
-		data: helpers.GithubRepoInfo{
+		data: data.GithubRepoInfo{
 			Contributors: getTestContributorData(contributorCount),
 		},
 		config: config.ScorerConfig{

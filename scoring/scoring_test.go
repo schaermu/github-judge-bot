@@ -7,12 +7,12 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 	"github.com/stretchr/testify/assert"
 )
 
-func getGithubTestData() helpers.GithubRepoInfo {
-	return helpers.GithubRepoInfo{
+func getGithubTestData() data.GithubRepoInfo {
+	return data.GithubRepoInfo{
 		License:        "Not existing dummy license",
 		LicenseId:      "NOT_EXISTING",
 		Stars:          1,
@@ -49,9 +49,7 @@ func TestGetTotalScore(t *testing.T) {
 		panic(err)
 	}
 
-	_, maxScore := CreateScorerMap(testData, config.Scorers)
-
-	score, penalties := GetTotalScore(testData, config.Scorers)
+	score, maxScore, penalties := GetTotalScore(testData, config.Scorers)
 	assert.NotEqual(t, maxScore, score)
 	assert.NotEmpty(t, penalties)
 }

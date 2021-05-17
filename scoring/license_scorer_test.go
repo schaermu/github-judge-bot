@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 	"github.com/stretchr/testify/assert"
 )
 
 func getTestLicenseScorer(license string, validLicenses []string) LicenseScorer {
 	return LicenseScorer{
-		data: helpers.GithubRepoInfo{
+		data: data.GithubRepoInfo{
 			License:   license,
 			LicenseId: license,
 		},

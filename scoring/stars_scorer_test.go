@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
 	"github.com/stretchr/testify/assert"
 )
 
 func getTestStarsScorer(stars int, minStars int) StarsScorer {
 	return StarsScorer{
-		data: helpers.GithubRepoInfo{
+		data: data.GithubRepoInfo{
 			Stars: stars,
 		},
 		config: config.ScorerConfig{
