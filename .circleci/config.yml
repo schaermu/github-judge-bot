@@ -4,6 +4,8 @@ workflows:
     jobs:
       - build
       - release:
+          context:
+            - github-release
           # Only run this job on git tag pushes
           filters:
             branches:
