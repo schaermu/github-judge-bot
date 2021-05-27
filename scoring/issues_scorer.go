@@ -9,7 +9,7 @@ import (
 )
 
 type IssuesScorer struct {
-	data   data.GithubRepoInfo
+	data   *data.GithubRepoInfo
 	config config.ScorerConfig
 }
 

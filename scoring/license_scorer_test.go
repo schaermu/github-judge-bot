@@ -11,7 +11,7 @@ import (
 
 func getTestLicenseScorer(license string, validLicenses []string) LicenseScorer {
 	return LicenseScorer{
-		data: data.GithubRepoInfo{
+		data: &data.GithubRepoInfo{
 			License:   license,
 			LicenseId: license,
 		},

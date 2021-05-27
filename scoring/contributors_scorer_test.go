@@ -23,7 +23,7 @@ func getTestContributorData(contributorCount int) []*github.ContributorStats {
 
 func getTestContributorScorer(contributorCount int, minContributors int) ContributorsScorer {
 	return ContributorsScorer{
-		data: data.GithubRepoInfo{
+		data: &data.GithubRepoInfo{
 			Contributors: getTestContributorData(contributorCount),
 		},
 		config: config.ScorerConfig{

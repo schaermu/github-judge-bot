@@ -25,7 +25,7 @@ func getTestIssueData(closedOpenRatio float64, closedIssueCount int, openIssueCo
 
 func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssueCount int) IssuesScorer {
 	return IssuesScorer{
-		data: data.GithubRepoInfo{
+		data: &data.GithubRepoInfo{
 			Issues: getTestIssueData(closedOpenRatio, closedIssueCount, openIssueCount),
 		},
 		config: config.ScorerConfig{

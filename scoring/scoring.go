@@ -14,7 +14,7 @@ type Scorer interface {
 	GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty)
 }
 
-func CreateScorer(data data.GithubRepoInfo, config config.ScorerConfig) Scorer {
+func CreateScorer(data *data.GithubRepoInfo, config config.ScorerConfig) Scorer {
 	switch config.Name {
 	case "stars":
 		return StarsScorer{data: data, config: config}
@@ -31,7 +31,7 @@ func CreateScorer(data data.GithubRepoInfo, config config.ScorerConfig) Scorer {
 	}
 }
 
-func CreateScorerMap(data data.GithubRepoInfo, configs []config.ScorerConfig) (scorers map[string]Scorer, score float64) {
+func CreateScorerMap(data *data.GithubRepoInfo, configs []config.ScorerConfig) (scorers map[string]Scorer, score float64) {
 	// create map of all scorers and initialize score to maximum possible
 	scorers = map[string]Scorer{}
 	for _, config := range configs {
@@ -41,7 +41,7 @@ func CreateScorerMap(data data.GithubRepoInfo, configs []config.ScorerConfig) (s
 	return
 }
 
-func GetTotalScore(data data.GithubRepoInfo, scorers []config.ScorerConfig) (score float64, maxScore float64, penalties []ScoringPenalty) {
+func GetTotalScore(data *data.GithubRepoInfo, scorers []config.ScorerConfig) (score float64, maxScore float64, penalties []ScoringPenalty) {
 	scorerMap, maxScore := CreateScorerMap(data, scorers)
 	score = maxScore
 	// execute scorers

@@ -8,7 +8,7 @@ import (
 )
 
 type StarsScorer struct {
-	data   data.GithubRepoInfo
+	data   *data.GithubRepoInfo
 	config config.ScorerConfig
 }
 

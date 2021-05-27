@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getGithubTestData() data.GithubRepoInfo {
-	return data.GithubRepoInfo{
+func getGithubTestData() *data.GithubRepoInfo {
+	return &data.GithubRepoInfo{
 		License:        "Not existing dummy license",
 		LicenseId:      "NOT_EXISTING",
 		Stars:          1,
@@ -36,9 +36,9 @@ func TestCreateScorer(t *testing.T) {
 		panic(err)
 	}
 
-	for _, config := range config.Scorers {
-		scorer := CreateScorer(testData, config)
-		assert.Equal(t, strcase.ToCamel(config.Name+"Scorer"), reflect.TypeOf(scorer).Name())
+	for _, sc := range config.Scorers {
+		scorer := CreateScorer(testData, sc)
+		assert.Equal(t, strcase.ToCamel(sc.Name+"Scorer"), reflect.TypeOf(scorer).Name())
 	}
 }
 

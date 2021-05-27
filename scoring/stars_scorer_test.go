@@ -11,7 +11,7 @@ import (
 
 func getTestStarsScorer(stars int, minStars int) StarsScorer {
 	return StarsScorer{
-		data: data.GithubRepoInfo{
+		data: &data.GithubRepoInfo{
 			Stars: stars,
 		},
 		config: config.ScorerConfig{

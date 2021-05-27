@@ -9,7 +9,7 @@ import (
 )
 
 type LicenseScorer struct {
-	data   data.GithubRepoInfo
+	data   *data.GithubRepoInfo
 	config config.ScorerConfig
 }
 

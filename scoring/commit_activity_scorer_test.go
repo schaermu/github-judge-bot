@@ -29,7 +29,7 @@ func getTestCommitActivityData(inactiveWeekCount int) []*github.WeeklyCommitActi
 
 func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) CommitActivityScorer {
 	return CommitActivityScorer{
-		data: data.GithubRepoInfo{
+		data: &data.GithubRepoInfo{
 			CommitActivity: getTestCommitActivityData(inactiveWeekCount),
 		},
 		config: config.ScorerConfig{

@@ -10,7 +10,7 @@ import (
 
 type ContributorsScorer struct {
 	Scorer
-	data   data.GithubRepoInfo
+	data   *data.GithubRepoInfo
 	config config.ScorerConfig
 }
 
