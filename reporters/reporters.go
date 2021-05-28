@@ -22,7 +22,7 @@ type BaseReporter struct {
 }
 
 func (r *BaseReporter) getScoreForText(text string) (success bool, summary scoring.ScoringSummary, info *data.GithubRepoInfo, err error) {
-	match := regexp.MustCompile(helpers.GITHUB_URL_REGEX).MatchString(text)
+	match := regexp.MustCompile(helpers.GithubURLRegex).MatchString(text)
 	if match {
 		gh := helpers.GithubHelper{
 			Config: r.cfg.Github,

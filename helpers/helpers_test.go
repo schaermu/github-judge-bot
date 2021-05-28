@@ -7,21 +7,21 @@ import (
 )
 
 func TestExtractInfoFromUrl(t *testing.T) {
-	org, repo, err := ExtractInfoFromUrl("https://github.com/foo/bar")
+	org, repo, err := ExtractInfoFromURL("https://github.com/foo/bar")
 	assert.Nil(t, err)
 	assert.Equal(t, "foo", org)
 	assert.Equal(t, "bar", repo)
 }
 
 func TestExtractInfoFromUrlNonGithub(t *testing.T) {
-	org, repo, err := ExtractInfoFromUrl("https://foobar.org/test/me")
+	org, repo, err := ExtractInfoFromURL("https://foobar.org/test/me")
 	assert.NotNil(t, err)
 	assert.Empty(t, org)
 	assert.Empty(t, repo)
 }
 
 func TestExtractInfoFromUrlInvalid(t *testing.T) {
-	org, repo, err := ExtractInfoFromUrl("THIS_IS_SPARTA")
+	org, repo, err := ExtractInfoFromURL("THIS_IS_SPARTA")
 	assert.NotNil(t, err)
 	assert.Empty(t, org)
 	assert.Empty(t, repo)

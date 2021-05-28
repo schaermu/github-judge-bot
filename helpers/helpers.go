@@ -12,13 +12,16 @@ import (
 	"github.com/schaermu/go-github-judge-bot/data"
 )
 
-const GITHUB_URL_REGEX string = "github.com/([^/]+)/([^/<>]+)"
+// GithubURLRegex provides a regular expression to detect and split github repository url's.
+const GithubURLRegex string = "github.com/([^/]+)/([^/<>]+)"
 
+// GithubHelper provides helper functions to fetch data from Github's API.
 type GithubHelper struct {
 	Config config.GithubConfig
 }
 
-func (gh GithubHelper) GetRepositoryData(repoUrl string) (info data.GithubRepoInfo, err error) {
+// GetRepositoryData fetches the latest data from Github API for a specific repository url.
+func (gh GithubHelper) GetRepositoryData(repoURL string) (info data.GithubRepoInfo, err error) {
 	tp := http.DefaultClient
 	if gh.Config.Username != "" && gh.Config.PersonalAccessToken != "" {
 		basicAuth := github.BasicAuthTransport{
@@ -31,7 +34,7 @@ func (gh GithubHelper) GetRepositoryData(repoUrl string) (info data.GithubRepoIn
 	client := github.NewClient(tp)
 	ctx := context.Background()
 
-	org, repo, err := ExtractInfoFromUrl(repoUrl)
+	org, repo, err := ExtractInfoFromURL(repoURL)
 	if err != nil {
 		return
 	}
@@ -83,8 +86,9 @@ func getRepoIssues(info *data.GithubRepoInfo, client *github.Client, waitgroup *
 	waitgroup.Done()
 }
 
-func ExtractInfoFromUrl(repoUrl string) (org string, repo string, err error) {
-	matches := regexp.MustCompile(GITHUB_URL_REGEX).FindStringSubmatch(repoUrl)
+// ExtractInfoFromURL gets the organisation/user and the repository slug from a Github URL.
+func ExtractInfoFromURL(repoURL string) (org string, repo string, err error) {
+	matches := regexp.MustCompile(GithubURLRegex).FindStringSubmatch(repoURL)
 	if len(matches) < 2 {
 		return "", "", errors.New("could not determine organization and/or repository name from url")
 	}
