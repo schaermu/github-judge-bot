@@ -19,8 +19,9 @@ func (s StarsScorer) GetScore(currentScore float64, penalties []ScoringPenalty) 
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("Less than %d stars (*%d* stars)", reqStars, s.data.Stars),
-			Amount: scoreChange,
+			ScorerName: "Stars",
+			Reason:     fmt.Sprintf("Less than %d stars (%d stars)", reqStars, s.data.Stars),
+			Amount:     scoreChange,
 		})
 	}
 

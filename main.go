@@ -21,13 +21,21 @@ func main() {
 		return
 	}
 
-	if cfg.Slack.AppToken != "" {
+	args := os.Args[1:]
+
+	if len(args) > 0 {
+		// assume stdin as source for url, use stdout reporter
+		stdoutReporter := reporters.NewStdoutReporter(&cfg)
+		stdoutReporter.HandleMessage(os.Args[1:][0])
+	} else if cfg.Slack.AppToken != "" {
 		// start handling events coming in from slack
 		slackReporter := reporters.NewSlackReporter(&cfg)
 		go slackReporter.HandleMessage("")
 		slackReporter.Run()
 	} else {
-		// assume stdin as source for url, use terminal reporter
-
+		// print usage
+		println("Usage: github-judge [URL]")
+		println("")
+		println("Note: to start github-judge in bot-mode, make sure to configure it properly.")
 	}
 }

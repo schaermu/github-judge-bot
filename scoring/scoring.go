@@ -5,9 +5,17 @@ import (
 	"github.com/schaermu/go-github-judge-bot/data"
 )
 
+type ScoringSummary struct {
+	Score          float64
+	MaxScore       float64
+	TotalPenalties float64
+	Penalties      []ScoringPenalty
+}
+
 type ScoringPenalty struct {
-	Reason string
-	Amount float64
+	ScorerName string
+	Reason     string
+	Amount     float64
 }
 
 type Scorer interface {
@@ -41,13 +49,19 @@ func CreateScorerMap(data *data.GithubRepoInfo, configs []config.ScorerConfig) (
 	return
 }
 
-func GetTotalScore(data *data.GithubRepoInfo, scorers []config.ScorerConfig) (score float64, maxScore float64, penalties []ScoringPenalty) {
+func GetTotalScore(data *data.GithubRepoInfo, scorers []config.ScorerConfig) (summary ScoringSummary) {
 	scorerMap, maxScore := CreateScorerMap(data, scorers)
-	score = maxScore
+	score := maxScore
+	penalties := []ScoringPenalty{}
 	// execute scorers
 	for _, scorer := range scorerMap {
 		score, penalties = scorer.GetScore(score, penalties)
 	}
 
-	return score, maxScore, penalties
+	return ScoringSummary{
+		Score:          score,
+		MaxScore:       maxScore,
+		TotalPenalties: maxScore - score,
+		Penalties:      penalties,
+	}
 }

@@ -49,7 +49,7 @@ func TestGetTotalScore(t *testing.T) {
 		panic(err)
 	}
 
-	score, maxScore, penalties := GetTotalScore(testData, config.Scorers)
-	assert.NotEqual(t, maxScore, score)
-	assert.NotEmpty(t, penalties)
+	summary := GetTotalScore(testData, config.Scorers)
+	assert.NotEqual(t, summary.MaxScore, summary.Score)
+	assert.NotEmpty(t, summary.Penalties)
 }

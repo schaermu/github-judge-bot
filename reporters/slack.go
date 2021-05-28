@@ -1,11 +1,13 @@
 package reporters
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/schaermu/go-github-judge-bot/config"
-	"github.com/schaermu/go-github-judge-bot/helpers"
+	"github.com/schaermu/go-github-judge-bot/data"
+	"github.com/schaermu/go-github-judge-bot/scoring"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
@@ -70,9 +72,11 @@ func (sr *SlackReporter) HandleMessage(message string) {
 				innerEvent := eventsAPIEvent.InnerEvent
 				switch ev := innerEvent.Data.(type) {
 				case *slackevents.AppMentionEvent:
-					if isScored, score, maxScore, penalties, info := sr.GetScoreForText(ev.Text); isScored {
-						msgBlocks := helpers.BuildSlackResponse(info.OrgName, info.RepositoryName, score, maxScore, penalties)
+					if isScored, summary, info, err := sr.getScoreForText(ev.Text); isScored && err == nil {
+						msgBlocks := buildSlackResponse(info, summary.Score, summary.MaxScore, summary.Penalties)
 						sr.api.PostMessage(ev.Channel, msgBlocks...)
+					} else if err != nil {
+						sr.api.PostMessage(ev.Channel, buildSlackError(info, err)...)
 					}
 				}
 			default:
@@ -82,4 +86,62 @@ func (sr *SlackReporter) HandleMessage(message string) {
 			log.Printf("Unexpected event type received: %s\n", evt.Type)
 		}
 	}
+}
+
+func getSlackMessageColorAndIcon(score float64, maxScore float64) (color string, icon string) {
+	if maxScore/100*score < .4 {
+		return "danger", ":exclamation:"
+	}
+	if maxScore/100*score < .8 {
+		return "warning", ":warning:"
+	}
+	return "good", ":+1::skin-tone-2:"
+}
+
+func buildSlackError(repoInfo *data.GithubRepoInfo, err error) []slack.MsgOption {
+	var messageColor = "danger"
+	var messageIcon = ":exclamation:"
+
+	return []slack.MsgOption{
+		slack.MsgOptionIconEmoji(messageIcon),
+		slack.MsgOptionText(fmt.Sprintf("Analysis of `%s/%s` failed!", repoInfo.OrgName, repoInfo.RepositoryName), false),
+		slack.MsgOptionAttachments(
+			slack.Attachment{
+				Color:      messageColor,
+				MarkdownIn: []string{"text"},
+				Text:       err.Error(),
+			},
+		),
+	}
+}
+
+func buildSlackResponse(repoInfo *data.GithubRepoInfo, score float64, maxScore float64, penalties []scoring.ScoringPenalty) []slack.MsgOption {
+	messageColor, messageIcon := getSlackMessageColorAndIcon(score, maxScore)
+
+	// build default message
+	res := []slack.MsgOption{
+		slack.MsgOptionIconEmoji(messageIcon),
+		slack.MsgOptionText(fmt.Sprintf("Judgement of of `%s/%s` complete, it scored **%.2f/%.2f** points!", repoInfo.OrgName, repoInfo.RepositoryName, score, maxScore), false),
+	}
+
+	// append penalty attachment containing details
+	if len(penalties) > 0 {
+		penaltyOutput := ""
+		for _, penalty := range penalties {
+			penaltyOutput += fmt.Sprintf("**-%.2f** _%s_\n", penalty.Amount, penalty.Reason)
+		}
+
+		attachment := slack.MsgOptionAttachments(
+			slack.Attachment{
+				Color:      messageColor,
+				MarkdownIn: []string{"text"},
+				Text:       penaltyOutput,
+				Pretext:    "The following reasons lead to penalties",
+			},
+		)
+
+		res = append(res, attachment)
+	}
+
+	return res
 }

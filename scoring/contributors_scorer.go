@@ -29,8 +29,9 @@ func (s ContributorsScorer) GetScore(currentScore float64, penalties []ScoringPe
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("There are only *%d/%d* required contributors", len(s.data.Contributors), minContribs),
-			Amount: scoreChange,
+			ScorerName: "Contributors",
+			Reason:     fmt.Sprintf("There are only %d out of %d required contributors", len(s.data.Contributors), minContribs),
+			Amount:     scoreChange,
 		})
 	}
 

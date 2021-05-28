@@ -36,8 +36,9 @@ func (s IssuesScorer) GetScore(currentScore float64, penalties []ScoringPenalty)
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("Closed-Open Ratio on issues is below 1:%.2f (*1:%.2f*)", requiredRatio, ratio),
-			Amount: scoreChange,
+			ScorerName: "Issues",
+			Reason:     fmt.Sprintf("Closed-Open Ratio on issues is below 1:%.2f (*1:%.2f*)", requiredRatio, ratio),
+			Amount:     scoreChange,
 		})
 	}
 

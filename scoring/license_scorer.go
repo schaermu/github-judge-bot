@@ -39,8 +39,9 @@ func (s LicenseScorer) GetScore(currentScore float64, penalties []ScoringPenalty
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("No valid license found: %s", s.data.License),
-			Amount: scoreChange,
+			ScorerName: "License",
+			Reason:     fmt.Sprintf("No valid license found: %s", s.data.License),
+			Amount:     scoreChange,
 		})
 	}
 

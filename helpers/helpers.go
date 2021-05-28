@@ -3,7 +3,6 @@ package helpers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"sync"
@@ -11,9 +10,9 @@ import (
 	"github.com/google/go-github/v35/github"
 	"github.com/schaermu/go-github-judge-bot/config"
 	"github.com/schaermu/go-github-judge-bot/data"
-	"github.com/schaermu/go-github-judge-bot/scoring"
-	"github.com/slack-go/slack"
 )
+
+const GITHUB_URL_REGEX string = "github.com/([^/]+)/([^/<>]+)"
 
 type GithubHelper struct {
 	Config config.GithubConfig
@@ -85,51 +84,9 @@ func getRepoIssues(info *data.GithubRepoInfo, client *github.Client, waitgroup *
 }
 
 func ExtractInfoFromUrl(repoUrl string) (org string, repo string, err error) {
-	r, _ := regexp.Compile("github.com/([^/]+)/([^/<>]+)")
-	matches := r.FindStringSubmatch(repoUrl)
+	matches := regexp.MustCompile(GITHUB_URL_REGEX).FindStringSubmatch(repoUrl)
 	if len(matches) < 2 {
 		return "", "", errors.New("could not determine organization and/or repository name from url")
 	}
 	return matches[1], matches[2], nil
-}
-
-func GetSlackMessageColorAndIcon(score float64, maxScore float64) (color string, icon string) {
-	if maxScore/100*score < .4 {
-		return "danger", ":exclamation:"
-	}
-	if maxScore/100*score < .8 {
-		return "warning", ":warning:"
-	}
-	return "good", ":+1::skin-tone-2:"
-}
-
-func BuildSlackResponse(org string, repository string, score float64, maxScore float64, penalties []scoring.ScoringPenalty) []slack.MsgOption {
-	messageColor, messageIcon := GetSlackMessageColorAndIcon(score, maxScore)
-
-	// build default message
-	res := []slack.MsgOption{
-		slack.MsgOptionIconEmoji(messageIcon),
-		slack.MsgOptionText(fmt.Sprintf("Analysis of `%s/%s` complete, final score is *%.2f/10.00* points!", org, repository, score), false),
-	}
-
-	// append penalty attachment containing details
-	if len(penalties) > 0 {
-		penaltyOutput := ""
-		for _, penalty := range penalties {
-			penaltyOutput += fmt.Sprintf("-*%.2f* _%s_\n", penalty.Amount, penalty.Reason)
-		}
-
-		attachment := slack.MsgOptionAttachments(
-			slack.Attachment{
-				Color:      messageColor,
-				MarkdownIn: []string{"text"},
-				Text:       penaltyOutput,
-				Pretext:    "The following reasons lead to penalties",
-			},
-		)
-
-		res = append(res, attachment)
-	}
-
-	return res
 }

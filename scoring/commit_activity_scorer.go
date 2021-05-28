@@ -30,7 +30,9 @@ func (s CommitActivityScorer) GetScore(currentScore float64, penalties []Scoring
 		currentScore -= scoreChange
 
 		penalties = append(penalties, ScoringPenalty{
-			Reason: fmt.Sprintf("The last commit was more than *%d* week(s) ago", weeksWithoutActivity),
+			ScorerName: "CommitActivity",
+			// TODO: pluralization
+			Reason: fmt.Sprintf("The last commit was more than %d week(s) ago", weeksWithoutActivity),
 			Amount: scoreChange,
 		})
 	}
