@@ -13,6 +13,7 @@ import (
 	"github.com/slack-go/slack/socketmode"
 )
 
+// SlackReporter sends judge results to the configured slack team.
 type SlackReporter struct {
 	Reporter
 	BaseReporter
@@ -20,6 +21,7 @@ type SlackReporter struct {
 	api    *slack.Client
 }
 
+// NewSlackReporter creates a new SlackReporter instance based on the config.
 func NewSlackReporter(cfg *config.Config) SlackReporter {
 	api := slack.New(
 		cfg.Slack.BotToken,
@@ -41,10 +43,13 @@ func NewSlackReporter(cfg *config.Config) SlackReporter {
 	}
 }
 
+// Run starts listening for new messages on the Slack socketmode client.
 func (sr *SlackReporter) Run() {
 	sr.client.Run()
 }
 
+// HandleMessage will react to all messages that are pushed through the Slack socketmode client.
+// NOTE: always pass an empty string as a message, this parameter is being ignored!
 func (sr *SlackReporter) HandleMessage(message string) {
 	for evt := range sr.client.Events {
 		switch evt.Type {

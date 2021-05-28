@@ -10,19 +10,19 @@ import (
 	"github.com/schaermu/go-github-judge-bot/scoring"
 )
 
-var GITHUB_URL_MATCHER = regexp.MustCompile(helpers.GITHUB_URL_REGEX)
-
+// Reporter provides the interface all reporters must follow.
 type Reporter interface {
 	HandleMessage(message string)
 	Run()
 }
 
+// BaseReporter provides a base functionality for reporters.
 type BaseReporter struct {
 	cfg config.Config
 }
 
 func (r *BaseReporter) getScoreForText(text string) (success bool, summary scoring.ScoringSummary, info *data.GithubRepoInfo, err error) {
-	match := GITHUB_URL_MATCHER.MatchString(text)
+	match := regexp.MustCompile(helpers.GITHUB_URL_REGEX).MatchString(text)
 	if match {
 		gh := helpers.GithubHelper{
 			Config: r.cfg.Github,
@@ -38,7 +38,6 @@ func (r *BaseReporter) getScoreForText(text string) (success bool, summary scori
 		summary = scoring.GetTotalScore(info, r.cfg.Scorers)
 		success = true
 		return
-	} else {
-		return false, summary, nil, fmt.Errorf("%s does not contain a valid github.com url", text)
 	}
+	return false, summary, nil, fmt.Errorf("%s does not contain a valid github.com url", text)
 }

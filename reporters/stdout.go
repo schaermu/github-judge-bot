@@ -9,21 +9,25 @@ import (
 	"github.com/schaermu/go-github-judge-bot/config"
 )
 
+// StdoutReporter pretty-prints judge results to stdout.
 type StdoutReporter struct {
 	Reporter
 	BaseReporter
 }
 
+// NewStdoutReporter creates a new StdoutReporter instance based on the config.
 func NewStdoutReporter(cfg *config.Config) StdoutReporter {
 	return StdoutReporter{
 		BaseReporter: BaseReporter{cfg: *cfg},
 	}
 }
 
+// Run is a noop for this reporter
 func (sr *StdoutReporter) Run() {
 	// noop
 }
 
+// HandleMessage will get the scoring for a single message and print it.
 func (sr *StdoutReporter) HandleMessage(message string) {
 	if isScored, summary, info, err := sr.getScoreForText(message); isScored && err == nil {
 		// pretty print result to stdout
