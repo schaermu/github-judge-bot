@@ -8,12 +8,16 @@ import (
 	"github.com/schaermu/go-github-judge-bot/data"
 )
 
+// LicenseScorer provides a scoring based on the repository's license.
 type LicenseScorer struct {
 	data   *data.GithubRepoInfo
 	config config.ScorerConfig
 }
 
-func (s LicenseScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
+// GetScore calculates a score based on the licensing.
+// If the repository does not provide a valid, OSI approved and non-deprecated license listed on SPDX, a penalty is applied.
+// Optionally, the user can configure a custom whitelist in "valid_license_ids" for all license he want's to let through (this overrules the SPDX index).
+func (s LicenseScorer) GetScore(currentScore float64, penalties []Penalty) (float64, []Penalty) {
 	// the license of the project is either checked against a whitelist or against all osi approved licenses from spdx
 	scoreChange := 0.0
 	validIds := s.config.GetSlice("valid_license_ids")
@@ -38,7 +42,7 @@ func (s LicenseScorer) GetScore(currentScore float64, penalties []ScoringPenalty
 	if scoreChange > 0 {
 		currentScore -= scoreChange
 
-		penalties = append(penalties, ScoringPenalty{
+		penalties = append(penalties, Penalty{
 			ScorerName: "License",
 			Reason:     fmt.Sprintf("No valid license found: %s", s.data.License),
 			Amount:     scoreChange,

@@ -120,7 +120,7 @@ func buildSlackError(repoInfo *data.GithubRepoInfo, err error) []slack.MsgOption
 	}
 }
 
-func buildSlackResponse(repoInfo *data.GithubRepoInfo, score float64, maxScore float64, penalties []scoring.ScoringPenalty) []slack.MsgOption {
+func buildSlackResponse(repoInfo *data.GithubRepoInfo, score float64, maxScore float64, penalties []scoring.Penalty) []slack.MsgOption {
 	messageColor, messageIcon := getSlackMessageColorAndIcon(score, maxScore)
 
 	// build default message

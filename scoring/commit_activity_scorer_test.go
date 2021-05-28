@@ -44,7 +44,7 @@ func getTestCommitActivityScorer(inactiveWeekCount int, penaltyPerWeek float64) 
 func TestCommitActivityScorerGetScore(t *testing.T) {
 	scorer := getTestCommitActivityScorer(0, 0.25)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -57,7 +57,7 @@ func TestCommitActivityScorerGetScore(t *testing.T) {
 func TestCommitActivityScorerGetScorePenalty(t *testing.T) {
 	scorer := getTestCommitActivityScorer(2, 0.25)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -72,7 +72,7 @@ func TestCommitActivityScorerGetScorePenalty(t *testing.T) {
 func TestCommitActivityScorerGetScoreCappedPenalty(t *testing.T) {
 	scorer := getTestCommitActivityScorer(40, 0.25)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 

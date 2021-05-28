@@ -5,23 +5,27 @@ import (
 	"github.com/schaermu/go-github-judge-bot/data"
 )
 
-type ScoringSummary struct {
+// Summary contains the result of a full scoring run.
+type Summary struct {
 	Score          float64
 	MaxScore       float64
 	TotalPenalties float64
-	Penalties      []ScoringPenalty
+	Penalties      []Penalty
 }
 
-type ScoringPenalty struct {
+// Penalty contains details about a penalty that was applied.
+type Penalty struct {
 	ScorerName string
 	Reason     string
 	Amount     float64
 }
 
+// Scorer provides the interface all scorers must follow.
 type Scorer interface {
-	GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty)
+	GetScore(currentScore float64, penalties []Penalty) (float64, []Penalty)
 }
 
+// CreateScorer builds a scorer object for a specific name configured in the config.
 func CreateScorer(data *data.GithubRepoInfo, config config.ScorerConfig) Scorer {
 	switch config.Name {
 	case "stars":
@@ -39,6 +43,7 @@ func CreateScorer(data *data.GithubRepoInfo, config config.ScorerConfig) Scorer 
 	}
 }
 
+// CreateScorerMap builds a map of scorer names/objects and calculates the maximum score.
 func CreateScorerMap(data *data.GithubRepoInfo, configs []config.ScorerConfig) (scorers map[string]Scorer, score float64) {
 	// create map of all scorers and initialize score to maximum possible
 	scorers = map[string]Scorer{}
@@ -49,16 +54,17 @@ func CreateScorerMap(data *data.GithubRepoInfo, configs []config.ScorerConfig) (
 	return
 }
 
-func GetTotalScore(data *data.GithubRepoInfo, scorers []config.ScorerConfig) (summary ScoringSummary) {
+// GetTotalScore calculates the score summary for a github repository with the specified scorers.
+func GetTotalScore(data *data.GithubRepoInfo, scorers []config.ScorerConfig) (summary Summary) {
 	scorerMap, maxScore := CreateScorerMap(data, scorers)
 	score := maxScore
-	penalties := []ScoringPenalty{}
-	// execute scorers
+	penalties := []Penalty{}
+	// run scorers
 	for _, scorer := range scorerMap {
 		score, penalties = scorer.GetScore(score, penalties)
 	}
 
-	return ScoringSummary{
+	return Summary{
 		Score:          score,
 		MaxScore:       maxScore,
 		TotalPenalties: maxScore - score,

@@ -40,7 +40,7 @@ func getTestIssueScorer(closedOpenRatio float64, closedIssueCount int, openIssue
 func TestIssueScorerGetScore(t *testing.T) {
 	scorer := getTestIssueScorer(0.2, 20, 4)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -53,7 +53,7 @@ func TestIssueScorerGetScore(t *testing.T) {
 func TestIssueScorerGetScorePenalty(t *testing.T) {
 	scorer := getTestIssueScorer(0.2, 20, 10)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 

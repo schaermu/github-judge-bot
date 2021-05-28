@@ -26,7 +26,7 @@ func getTestStarsScorer(stars int, minStars int) StarsScorer {
 func TestStarsScorerGetScore(t *testing.T) {
 	scorer := getTestStarsScorer(800, 600)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -39,7 +39,7 @@ func TestStarsScorerGetScore(t *testing.T) {
 func TestStarsScorerGetScorePenalty(t *testing.T) {
 	scorer := getTestStarsScorer(800, 900)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 

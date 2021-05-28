@@ -27,13 +27,13 @@ func TestGetSlackMessageColorsDanger(t *testing.T) {
 }
 
 func TestBuildSlackResponse(t *testing.T) {
-	penalties := []scoring.ScoringPenalty{}
+	penalties := []scoring.Penalty{}
 	msgBlocks := buildSlackResponse(&data.GithubRepoInfo{OrgName: "foo", RepositoryName: "bar"}, 10, 10, penalties)
 	assert.Len(t, msgBlocks, 2)
 }
 
 func TestBuildSlackResponsePenalties(t *testing.T) {
-	penalties := []scoring.ScoringPenalty{{Reason: "Test reason", Amount: 3}}
+	penalties := []scoring.Penalty{{Reason: "Test reason", Amount: 3}}
 	msgBlocks := buildSlackResponse(&data.GithubRepoInfo{OrgName: "foo", RepositoryName: "bar"}, 7, 10, penalties)
 	assert.Len(t, msgBlocks, 3)
 }

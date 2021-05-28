@@ -27,7 +27,7 @@ func getTestLicenseScorer(license string, validLicenses []string) LicenseScorer 
 func TestLicenseScorerGetScore(t *testing.T) {
 	scorer := getTestLicenseScorer("MIT", nil)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -40,7 +40,7 @@ func TestLicenseScorerGetScore(t *testing.T) {
 func TestLicenseScorerGetScorePenalty(t *testing.T) {
 	scorer := getTestLicenseScorer("MIT", []string{"BSD", "Apache-2.0"})
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 

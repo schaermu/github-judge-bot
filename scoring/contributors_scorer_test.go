@@ -38,7 +38,7 @@ func getTestContributorScorer(contributorCount int, minContributors int) Contrib
 func TestContributorScorerGetScore(t *testing.T) {
 	scorer := getTestContributorScorer(5, 3)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -51,7 +51,7 @@ func TestContributorScorerGetScore(t *testing.T) {
 func TestContributorScorerGetScorePenalty(t *testing.T) {
 	scorer := getTestContributorScorer(6, 10)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 
@@ -66,7 +66,7 @@ func TestContributorScorerGetScorePenalty(t *testing.T) {
 func TestContributorScorerGetScoreCappedPenalty(t *testing.T) {
 	scorer := getTestContributorScorer(1, 100)
 
-	penalties := make([]ScoringPenalty, 0)
+	penalties := make([]Penalty, 0)
 	score := 10.0
 	score, penalties = scorer.GetScore(score, penalties)
 

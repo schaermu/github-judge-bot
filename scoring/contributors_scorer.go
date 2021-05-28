@@ -8,13 +8,16 @@ import (
 	"github.com/schaermu/go-github-judge-bot/data"
 )
 
+// ContributorsScorer provides a scoring based on contributors on a repository.
 type ContributorsScorer struct {
 	Scorer
 	data   *data.GithubRepoInfo
 	config config.ScorerConfig
 }
 
-func (s ContributorsScorer) GetScore(currentScore float64, penalties []ScoringPenalty) (float64, []ScoringPenalty) {
+// GetScore calculates a score based on the active contributors.
+// For each missing contributor compared to min_contributors, a percentage of the configured max_penalty is applied to the score.
+func (s ContributorsScorer) GetScore(currentScore float64, penalties []Penalty) (float64, []Penalty) {
 	// we calculate the percentage of contributors vs. required contributors and apply that percentage as a penalty
 	minContribs := s.config.GetInt("min_contributors")
 	percentage := 100 / float64(minContribs) * float64(len(s.data.Contributors))
@@ -28,7 +31,7 @@ func (s ContributorsScorer) GetScore(currentScore float64, penalties []ScoringPe
 	if scoreChange > 0 {
 		currentScore -= scoreChange
 
-		penalties = append(penalties, ScoringPenalty{
+		penalties = append(penalties, Penalty{
 			ScorerName: "Contributors",
 			Reason:     fmt.Sprintf("There are only %d out of %d required contributors", len(s.data.Contributors), minContribs),
 			Amount:     scoreChange,

@@ -21,7 +21,7 @@ type BaseReporter struct {
 	cfg config.Config
 }
 
-func (r *BaseReporter) getScoreForText(text string) (success bool, summary scoring.ScoringSummary, info *data.GithubRepoInfo, err error) {
+func (r *BaseReporter) getScoreForText(text string) (success bool, summary scoring.Summary, info *data.GithubRepoInfo, err error) {
 	match := regexp.MustCompile(helpers.GithubURLRegex).MatchString(text)
 	if match {
 		gh := helpers.GithubHelper{
