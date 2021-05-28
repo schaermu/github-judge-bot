@@ -49,7 +49,7 @@ func (gh GithubHelper) GetRepositoryData(repoURL string) (info data.GithubRepoIn
 		RepositoryName: repo,
 		Stars:          repoInfo.GetStargazersCount(),
 		License:        repoInfo.GetLicense().GetName(),
-		LicenseId:      repoInfo.GetLicense().GetSPDXID(),
+		LicenseID:      repoInfo.GetLicense().GetSPDXID(),
 	}
 
 	var waitgroup sync.WaitGroup

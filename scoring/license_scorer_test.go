@@ -13,7 +13,7 @@ func getTestLicenseScorer(license string, validLicenses []string) LicenseScorer 
 	return LicenseScorer{
 		data: &data.GithubRepoInfo{
 			License:   license,
-			LicenseId: license,
+			LicenseID: license,
 		},
 		config: config.ScorerConfig{
 			MaxPenalty: 2.0,

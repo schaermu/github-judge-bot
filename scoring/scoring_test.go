@@ -14,7 +14,7 @@ import (
 func getGithubTestData() *data.GithubRepoInfo {
 	return &data.GithubRepoInfo{
 		License:        "Not existing dummy license",
-		LicenseId:      "NOT_EXISTING",
+		LicenseID:      "NOT_EXISTING",
 		Stars:          1,
 		OrgName:        "foo",
 		RepositoryName: "bar",
