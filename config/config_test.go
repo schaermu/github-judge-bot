@@ -6,7 +6,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	appConf, err := New(bytes.NewBuffer(GetTestConfig()))
+	appConf, err := New(bytes.NewBuffer(GetDefaultConfig()))
 
 	if err != nil {
 		t.Errorf("Failed to unmarshal config: %s", err)

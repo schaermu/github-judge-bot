@@ -2,7 +2,7 @@
 # GitHub Judge Bot - Your OpenSource evaluation buddy
 Ever wondered if that new, great open-source library you just found on Github is actually maintained? Or has too many open issues compared to the closed ones? Or has too restrictive licensing?
 
-<p style="text-align: center; font-size: 18px;">🤖 <span style="font-style: italic">GitHub Judge Bot will answer those questions for you!</span> 💡</p>
+<p align="center">🤖 <span style="font-style: italic">GitHub Judge Bot will answer those questions for you!</span> 💡</p>
 
 This application can either be used in CLI-mode or in Bot-mode. When using it in CLI mode, you can quickly gain insights into some key metrics of a Github repository using your shell. If you want to provide this capability to your whole team, you probably want to use it in bot mode.
 

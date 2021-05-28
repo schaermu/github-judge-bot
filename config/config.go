@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var fullTestConfig = []byte(`
+var defaultConfig = []byte(`
 debug: false
 scorers:
   - name: stars
@@ -31,8 +31,8 @@ scorers:
     max_penalty: 2.0
 `)
 
-func GetTestConfig() []byte {
-	return fullTestConfig
+func GetDefaultConfig() []byte {
+	return defaultConfig
 }
 
 type SlackConfig struct {

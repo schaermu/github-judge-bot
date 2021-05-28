@@ -25,7 +25,7 @@ func getGithubTestData() *data.GithubRepoInfo {
 }
 
 func getTestConfig() (config.Config, error) {
-	appConf, err := config.New(bytes.NewBuffer(config.GetTestConfig()))
+	appConf, err := config.New(bytes.NewBuffer(config.GetDefaultConfig()))
 	return appConf, err
 }
 

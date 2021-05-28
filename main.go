@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"os"
 
@@ -10,21 +11,30 @@ import (
 
 func main() {
 	f, err := os.Open("config.yaml")
+	cfg := config.Config{}
+	noConfigFile := false
 	if err != nil {
-		log.Panic(err)
+		// load static config, show warning
+		cfg, _ = config.New(bytes.NewBuffer(config.GetDefaultConfig()))
+		noConfigFile = true
+	} else {
+		cfg, err = config.New(f)
+		if err != nil {
+			log.Fatalf("Failed to parse config: %v", err)
+			return
+		}
 	}
 	defer f.Close()
-
-	cfg, err := config.New(f)
-	if err != nil {
-		log.Fatalf("Failed to parse config: %v", err)
-		return
-	}
 
 	args := os.Args[1:]
 
 	if len(args) > 0 {
 		// assume stdin as source for url, use stdout reporter
+		if noConfigFile {
+			println("no config.yaml found, falling back to default config")
+			println("")
+		}
+
 		stdoutReporter := reporters.NewStdoutReporter(&cfg)
 		stdoutReporter.HandleMessage(os.Args[1:][0])
 	} else if cfg.Slack.AppToken != "" {
