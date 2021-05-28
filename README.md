@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/schaermu/github-judge-bot/branch/main/graph/badge.svg?token=X6R1PQU7GT)](https://codecov.io/gh/schaermu/github-judge-bot) [![CircleCI](https://circleci.com/gh/schaermu/github-judge-bot.svg?style=shield )](https://circleci.com/gh/schaermu/github-judge-bot)
+[![codecov](https://codecov.io/gh/schaermu/github-judge-bot/branch/main/graph/badge.svg?token=X6R1PQU7GT)](https://codecov.io/gh/schaermu/github-judge-bot) [![CircleCI](https://circleci.com/gh/schaermu/github-judge-bot.svg?style=shield )](https://circleci.com/gh/schaermu/github-judge-bot) [![Go Report Card](https://goreportcard.com/badge/github.com/schaermu/github-judge-bot)](https://goreportcard.com/report/github.com/schaermu/github-judge-bot)
 # GitHub Judge Bot - Your OpenSource evaluation buddy
 Ever wondered if that new, great open-source library you just found on Github is actually maintained? Or has too many open issues compared to the closed ones? Or has too restrictive licensing?
 
