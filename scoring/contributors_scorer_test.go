@@ -10,12 +10,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getTestContributorData(contributorCount int) []*github.ContributorStats {
+func getTestContributorData(contributorCount int) []*github.Contributor {
 	// prepare commit activity data
-	contributors := make([]*github.ContributorStats, 0)
+	contributors := []*github.Contributor{}
 	if contributorCount > 0 {
 		for i := 1; i < contributorCount+1; i++ {
-			contributors = append(contributors, &github.ContributorStats{})
+			contributors = append(contributors, &github.Contributor{})
 		}
 	}
 	return contributors

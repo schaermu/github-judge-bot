@@ -10,5 +10,5 @@ type GithubRepoInfo struct {
 	LicenseId      string
 	Issues         []*github.Issue
 	CommitActivity []*github.WeeklyCommitActivity
-	Contributors   []*github.ContributorStats
+	Contributors   []*github.Contributor
 }

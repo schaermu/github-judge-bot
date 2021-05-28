@@ -121,14 +121,14 @@ func buildSlackResponse(repoInfo *data.GithubRepoInfo, score float64, maxScore f
 	// build default message
 	res := []slack.MsgOption{
 		slack.MsgOptionIconEmoji(messageIcon),
-		slack.MsgOptionText(fmt.Sprintf("Judgement of of `%s/%s` complete, it scored **%.2f/%.2f** points!", repoInfo.OrgName, repoInfo.RepositoryName, score, maxScore), false),
+		slack.MsgOptionText(fmt.Sprintf("Judgement of `%s/%s` complete, it scored *%.2f/%.2f* points!", repoInfo.OrgName, repoInfo.RepositoryName, score, maxScore), false),
 	}
 
 	// append penalty attachment containing details
 	if len(penalties) > 0 {
 		penaltyOutput := ""
 		for _, penalty := range penalties {
-			penaltyOutput += fmt.Sprintf("**-%.2f** _%s_\n", penalty.Amount, penalty.Reason)
+			penaltyOutput += fmt.Sprintf("*-%.2f* _%s_\n", penalty.Amount, penalty.Reason)
 		}
 
 		attachment := slack.MsgOptionAttachments(
@@ -136,7 +136,7 @@ func buildSlackResponse(repoInfo *data.GithubRepoInfo, score float64, maxScore f
 				Color:      messageColor,
 				MarkdownIn: []string{"text"},
 				Text:       penaltyOutput,
-				Pretext:    "The following reasons lead to penalties",
+				Pretext:    "The following reasons lead to penalties:",
 			},
 		)
 

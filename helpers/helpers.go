@@ -55,15 +55,15 @@ func (gh GithubHelper) GetRepositoryData(repoUrl string) (info data.GithubRepoIn
 	// fetch additional data
 	go getRepoIssues(&info, client, &waitgroup)
 	go getCommitActivity(&info, client, &waitgroup)
-	go getContributorStats(&info, client, &waitgroup)
+	go getContributors(&info, client, &waitgroup)
 
 	waitgroup.Wait()
 
 	return
 }
 
-func getContributorStats(info *data.GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
-	contributors, _, _ := client.Repositories.ListContributorsStats(context.Background(), info.OrgName, info.RepositoryName)
+func getContributors(info *data.GithubRepoInfo, client *github.Client, waitgroup *sync.WaitGroup) {
+	contributors, _, _ := client.Repositories.ListContributors(context.Background(), info.OrgName, info.RepositoryName, &github.ListContributorsOptions{Anon: "1"})
 	info.Contributors = contributors
 	waitgroup.Done()
 }
